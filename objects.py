@@ -1,15 +1,15 @@
 import pygame as pg
 from colors import *
-
+from random import randint
 
 # загружаем изображения
 im_outpost = 1  # загрузка изображения аванпоста
-im_forest = 1# загрузка изображения леса
+im_forest = 1   # загрузка изображения леса
 im_gold_vein = 1  # загрузка изображения золотой жилы
-im_mercenaries = 1 # загрузка изображения лагеря наемников
-im_enemies = 1 # загрузка изображения "вражин"
-im_farm = 1 # загрузка изображения фермы
-im_pie = 1# загрузка изображения "пирожка на полке"
+im_mercenaries = 1   # загрузка изображения лагеря наемников
+im_enemies = 1   # загрузка изображения "вражин"
+im_farm = 1   # загрузка изображения фермы
+im_pie = 1   # загрузка изображения "пирожка на полке"
 
 
 x_size = 40  # размер изображений клеток по х
@@ -34,10 +34,10 @@ class Outpost:
         self.moves = moves
         self.cost = cost
         self.player = ''
-        self.dispute = 0
+        self.dispute = 0   # ХЗ, зачем, но может понадобиться
         self.image = im_outpost
         self.screen = screen
-
+        self.exist = True   # надо будет дописать это в основную программу
 
     # Рисуем аванпост
     def draw(self):
@@ -71,18 +71,24 @@ class Outpost:
         else:
             self.built = 0
 
-    # Проверяем, попал ли аванпост в спорную территорию
-    def check_stranger(self, strange_x, strange_y, strange_player, strange_built):
-        """
-        strange_x, y - координаты другого аванпоста
-        stranger_player - владелец другого аванпоста
-        strange_built - check на постройку другого аванпоста
-        """
-        if (strange_player != self.player) and (self.built == 0) and (strange_built == 0):
-            if ((self.x - strange_x)**2 + (self.y - strange_y)**2 < 5):
-                self.dispute = 1
+    # Проверяем, попал ли аванпост в спорную территорию и проводим драчку
+    def check_stranger(self, stranger):
+        if ((self.x - stranger.x)**2 == 1 or (self.y - stranger.y)**2 == 1)\
+                and self.player != stranger.player and self.built == 0 and stranger.built == 0:
+            self.dispute = 1
+            stranger.dispute = 1
+            dice = randint(0, 100)
+            if self.player == name:
+                # формулу стоит изменить на что-нибудь поумнее
+                if dice > int(100*gamer.army/(gamer.army + computer.army)):   # ХЗ, как нормально обратиться к армии
+                    self.exist = False
+                else:
+                    stranger.exist = False
             else:
-                self.dispute = 0
+                if dice > int(100*computer.army/(gamer.army + computer.army)):
+                    stranger.exist = False
+                else:
+                    self.exist = False
 
 
 dict_cells = {'forest': '+building -gold', 'golden vein': '+gold', 'mercenaries': '+army -gold',
@@ -96,6 +102,7 @@ class Forest:
         self.screen = screen
         self.player = ''
         self.image = im_forest
+        self.resources = {'gold': -100, 'building': 500, 'food': 0, 'army': 0}   # потом поменять значения на нормальные
 
     def draw(self):
         pg.draw.rect(self.screen, YELLOW, (self.x - 5, self.y - 5, 10, 10))
@@ -109,6 +116,7 @@ class GoldVein:
         self.screen = screen
         self.player = ''
         self.image = im_gold_vein
+        self.resources = {'gold': 1000, 'building': 0, 'food': 0, 'army': 0}
 
     def draw(self):
         pg.draw.rect(self.screen, YELLOW, (self.x - 5, self.y - 5, 10, 10))
@@ -122,6 +130,7 @@ class Mercenaries:
         self.screen = screen
         self.player = ''
         self.image = im_mercenaries
+        self.resources = {'gold': -200, 'building': 0, 'food': 0, 'army': 500}
 
     def draw(self):
         pg.draw.rect(self.screen, YELLOW, (self.x - 5, self.y - 5, 10, 10))
@@ -135,6 +144,7 @@ class Enemies:
         self.screen = screen
         self.player = ''
         self.image = im_enemies
+        self.resources = {'gold': 500, 'building': 500, 'food': 0, 'army': -300}
 
     def draw(self):
         pg.draw.rect(self.screen, YELLOW, (self.x - 5, self.y - 5, 10, 10))
@@ -148,6 +158,7 @@ class Farm:
         self.screen = screen
         self.player = ''
         self.image = im_farm
+        self.resources = {'gold': -200, 'building': 0, 'food': 200, 'army': 0}
 
     def draw(self):
         pg.draw.rect(self.screen, YELLOW, (self.x - 5, self.y - 5, 10, 10))
@@ -161,6 +172,7 @@ class Pie:
         self.screen = screen
         self.player = ''
         self.image = im_pie
+        self.resources = {'gold': 0, 'building': -300, 'food': 300, 'army': 0}
 
     def draw(self):
         pg.draw.rect(self.screen, YELLOW, (self.x - 5, self.y - 5, 10, 10))
