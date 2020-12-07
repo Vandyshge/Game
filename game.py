@@ -6,6 +6,7 @@ import numpy as np
 from colors import *
 from constants import *
 from objects import *
+from ter import *
 
 class Mouse():
     def __init__(self):
@@ -23,8 +24,6 @@ class Game():
 
     def game(self):
         self.init_game()
-
-        board = Board(self.screen)
 
         clock = pg.time.Clock()
         pg.display.update()
@@ -47,8 +46,12 @@ class Game():
             board.draw()
             out = game_field.draw()
             if out:
-                out1 = game_field.check_ter(gamer)
-                print('game', out1)
+                cycle = game_field.check_cycle(gamer)
+                # print('game', out1)
+                if cycle != []:
+                    gamer.cycle.append(cycle)
+                    game_field.change_ter(cycle, gamer)
+                # print(gamer.cycle)
 
             pg.display.update()
             self.screen.fill(BLACK)
@@ -62,7 +65,8 @@ class Game():
         game_field = Game_field(self.screen)
         game_field.init_outpost()
         game_field.init_territorie()
-
+        global board
+        board = Board(self.screen)
 
 class Board():
     def __init__(self, screen):
@@ -90,7 +94,7 @@ class Game_field():
         self.screen = screen
         self.x = 250
         self.y = 100
-        self.y0 = 4000
+        self.y0 = 2000
         self.x0 = 461
         self.x_max = 500
         self.y_max = 450
@@ -143,9 +147,10 @@ class Game_field():
             return Pie(int(x), int(y), self.screen)
 
     def draw(self):
+        game_field.game_field()
         game_field.draw_outpostes()
         # game_field.grid()
-        game_field.game_field()
+        game_field.draw_territories()
         return game_field.interaction_with_fied()
 
     def grid(self):
@@ -231,6 +236,8 @@ class Game_field():
             text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.territories[x3][y3].x, self.outpostes[x3][y3].y, 'Outpost'), 5, WHITE)
             self.screen.blit(text0, (300, 5))
 
+            self.territories[x3][y3].draw_information()
+
         if self.pos == 'Outpost' and x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
             f0 = pygame.font.Font(None, 36)
             text0 = f0.render('x = {}, y = {}, pos = {}'.format(x3, y3, 'Outpost'), 5, WHITE)
@@ -255,109 +262,38 @@ class Game_field():
                 if self.outpostes[i][j].player != '':
                     self.outpostes[i][j].draw()
 
-    def check_neighbors(self, name, graph):
-        print('c_n', graph)
-        x, y = graph[len(graph) - 1][0], graph[len(graph) - 1][1]
-        x0, y0 = graph[len(graph) - 2][0], graph[len(graph) - 2][1]
-        print(f'x0, y0 = {x0}, {y0}, x, y = {x}, {y}')
-        a = []
-        if y + 1 <= 10:
-            if self.outpostes[x][y + 1].player == name and (x0, y0) != (x, y + 1):
-                print('check_gra_0_2', x, y + 1)
-                b = graph[:]
-                print('oh', b)
-                b.append((x, y + 1))
-                a.append(b)
-                print('oho', a)
-        if y - 1 >= 0:
-            if self.outpostes[x][y - 1].player == name and (x0, y0) != (x, y - 1):
-                print('check_gra_0_2', x, y - 1)
-                b = graph[:]
-                print('oh', b)
-                b.append((x, y - 1))
-                a.append(b)
-                print('oho', a)
-        if x + 1 >= 0:
-            if self.outpostes[x + 1][y].player == name and (x0, y0) != (x + 1, y):
-                print('check_gra_0_2', x + 1, y)
-                b = graph[:]
-                print('oh', b)
-                b.append((x + 1, y))
-                a.append(b)
-                print('oho', a)
-        if x - 1 >= 0:
-            if self.outpostes[x - 1][y].player == name and (x0, y0) != (x - 1, y):
-                print('check_gra_0_2', x - 1, y)
-                b = graph[:]
-                print('oh', b)
-                b.append((x - 1, y))
-                a.append(b)
-                print('oho', a)
-        print('check_gra_0', a)
-        return a
+    def draw_territories(self):
+        for j in range(self.n):
+            for i in range(self.n):
+                self.territories[i][j].draw()
 
-    def check_neighbors_0(self, name, x, y):
-        a = []
-        if y + 1 <= 10:
-            print('check_gra_0_1')
-            if self.outpostes[x][y + 1].player == name:
-                print('check_gra_0_2')
-                a.append([(x, y), (x, y + 1)])
-        if y - 1 >= 0:
-            print('check_gra_0_1')
-            if self.outpostes[x][y - 1].player == name:
-                print('check_gra_0_2')
-                a.append([(x, y), (x, y - 1)])
-        if x - 1 >= 0:
-            print('check_gra_0_1', self.outpostes[x - 1][y + 1].player)
-            if self.outpostes[x - 1][y].player == name:
-                print('check_gra_0_2')
-                a.append([(x, y), (x - 1, y)])
-        if x + 1 >= 0:
-            if self.outpostes[x + 1][y].player == name:
-                print('check_gra_0_2')
-                a.append([(x, y), (x + 1, y)])
-        print('check_gra_0', a)
-        return a
-
-    def graph(self, x0, y0, name):
-        graph0 = []
-        for elem_1 in self.check_neighbors_0(name, x0, y0):
-            graph0.append(elem_1)
-        print('graph_1', graph0)
-        if len(graph0) == 0:
-            return (False, 0)
-        while True:
-            graph1 = []
-            for elem in graph0:
-                for elem_1 in self.check_neighbors(name, elem):
-                    graph1.append(elem_1)
-                print('for graph1', graph1)
-                print()
-            print('graph', graph1)
-            if graph1 == []:
-                print('false')
-                return (False, 0)
-            graph0 = graph1[:]
-            for elem in graph0:
-                if elem[len(elem) - 1] == (x0, y0):
-                    return (True, elem)
-
-    def check_ter(self, player):
+    def check_cycle(self, player):
         a = player.myoutpostes
-        print('check_ter', a, player.name)
-        for x0, y0 in a:
-            out = self.graph(x0, y0, player.name)
-            print('-------------------------------------------------------------------------------------------')
-            print()
+        for x0, y0 in a[::-1]:
+            out = graph(x0, y0, self.outpostes, player.name)
+            # print('-------------------------------------------------------------------------------------------')
+            # print()
             if out[0]:
-                print('-------------------------------------------------------------------------------------------')
-                return out[1]
-        print('-------------------------------------------------------------------------------------------')
+                k = 0
+                for elem in player.cycle:
+                    if set(out[1]) == set(elem):
+                        k = 1
+                if len(out[1]) != (len(set(out[1])) + 1):
+                    k = 1
+                if k == 0:
+                    # print('-------------------------------------------------------------------------------------------')
+                    return out[1]
+        # print('-------------------------------------------------------------------------------------------')
         return []
 
-
-
+    def change_ter(self, cycle, player):
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.territories[i][j].player == '':
+                    if prove(cycle, i, j):
+                        print(i, j)
+                        self.territories[i][j].player = player.name
+                        print(self.territories[i][j].player)
 
 
 
@@ -366,9 +302,11 @@ class Gamer():
         self.name = name
         self.resources = {'gold': 1000, 'building': 0, 'food': 0, 'army': 0}
         self.myoutpostes = []
+        self.cycle = []
 
 class Computer():
     def __init__(self):
         self.name = 'computer'
         self.resources = {'gold': 1000, 'building': 0, 'food': 0, 'army': 0}
         self.myoutpostes = []
+        self.cycle = []
