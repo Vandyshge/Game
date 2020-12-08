@@ -2,8 +2,6 @@ from objects import *
 
 
 
-
-
 def check_neighbors(outpostes, name, graph):
     # print('c_n', graph)
     x, y = graph[len(graph) - 1][0], graph[len(graph) - 1][1]

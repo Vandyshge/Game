@@ -43,18 +43,9 @@ class Game():
                     # кнопка отжата
                     Mouse.p = False
 
-            board.draw()
-            out = game_field.draw()
-            if out:
-                cycle = game_field.check_cycle(gamer)
-                # print('game', out1)
-                if cycle != []:
-                    gamer.cycle.append(cycle)
-                    game_field.change_ter(cycle, gamer)
-                # print(gamer.cycle)
+            self.step_gamer()
+            self.step_computer()
 
-            pg.display.update()
-            self.screen.fill(BLACK)
 
         return True
 
@@ -67,6 +58,24 @@ class Game():
         game_field.init_territorie()
         global board
         board = Board(self.screen)
+
+    def step_gamer(self):
+        board.draw()
+        out = game_field.draw(gamer)
+        if out:
+            cycle = game_field.check_cycle(gamer)
+            # print('game', out1)
+            if cycle != []:
+                gamer.cycle.append(cycle)
+                game_field.change_ter(cycle, gamer)
+            # print(gamer.cycle)
+
+        pg.display.update()
+        self.screen.fill(BLACK)
+
+    def step_computer(self):
+        pass
+
 
 class Board():
     def __init__(self, screen):
@@ -146,12 +155,12 @@ class Game_field():
         elif name == 'pie':
             return Pie(int(x), int(y), self.screen)
 
-    def draw(self):
+    def draw(self, player):
         game_field.game_field()
         game_field.draw_outpostes()
         # game_field.grid()
         game_field.draw_territories()
-        return game_field.interaction_with_fied()
+        return game_field.interaction_with_fied(player)
 
     def grid(self):
         # pg.draw.circle(self.screen, RED, (10, 10), 10000)
@@ -198,7 +207,7 @@ class Game_field():
     def b_sol(self, x, y):
         return (self.x0 * y - self.y0 * x) / (self.x0 - x + 10**(-3))
 
-    def interaction_with_fied(self):
+    def interaction_with_fied(self, player):
         x0, y0 = self.xy(Mouse.x, Mouse.y)
         x0, y0 = x0 - self.x, y0 - self.y
         k, b = self.k_sol(x0, y0), self.b_sol(x0, y0)
@@ -246,20 +255,20 @@ class Game_field():
             self.outpostes[x3][y3].draw_information()
 
             if Mouse.p and self.outpostes[x3][y3].player == '':
-                self.outpostes[x3][y3].player = gamer.name
-                gamer.resources['gold'] -= self.outpostes[x3][y3].cost
-                # voc = gamer.myoutpostes
-                # print(gamer.myoutpostes)
+                self.outpostes[x3][y3].player = player.name
+                player.resources['gold'] -= self.outpostes[x3][y3].cost
+                # voc = player.myoutpostes
+                # print(player.myoutpostes)
                 # print('voc', voc, 'voc.ap', voc.append((x3, y3)))
-                gamer.myoutpostes.append((x3, y3))
-                # print(gamer.myoutpostes)
+                player.myoutpostes.append((x3, y3))
+                # print(player.myoutpostes)
                 return True
         return False
 
     def draw_outpostes(self):
         for j in range(self.n + 1):
             for i in range(self.n + 1):
-                if self.outpostes[i][j].player != '':
+                if self.outpostes[i][j].player != '' and self.outpostes[i][j].player != 'occupied':
                     self.outpostes[i][j].draw()
 
     def draw_territories(self):
@@ -291,9 +300,19 @@ class Game_field():
             for j in range(self.n):
                 if self.territories[i][j].player == '':
                     if prove(cycle, i, j):
-                        print(i, j)
                         self.territories[i][j].player = player.name
-                        print(self.territories[i][j].player)
+                        self.change_near_out(player, i, j)
+        self.change_cycle_out(player, cycle)
+
+    def change_near_out(self, player, x, y):
+        self.outpostes[x][y].player = 'occupied'
+        self.outpostes[x + 1][y].player = 'occupied'
+        self.outpostes[x + 1][y + 1].player = 'occupied'
+        self.outpostes[x][y + 1].player = 'occupied'
+
+    def change_cycle_out(self, player, cycle):
+        for x, y in cycle:
+            self.outpostes[x][y].player = player.name
 
 
 
