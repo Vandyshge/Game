@@ -25,7 +25,7 @@ class Labirint_Fantaxiy():
                 pass
                 menu = Menu(self.screen)
                 out = menu.menu()
-                print('111111')
+                # print('111111')
                 if out == 'Game_page':
                     self.page = 'Game_page'
                 elif out == True:

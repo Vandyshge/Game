@@ -2,7 +2,7 @@ from objects import *
 
 
 
-def check_neighbors(outpostes, name, graph):
+def check_neighbors(outpostes, name, graph, myoutpostes):
     # print('c_n', graph)
     x, y = graph[len(graph) - 1][0], graph[len(graph) - 1][1]
     x0, y0 = graph[len(graph) - 2][0], graph[len(graph) - 2][1]
@@ -10,7 +10,7 @@ def check_neighbors(outpostes, name, graph):
     a = []
     if y + 1 <= 10:
         if (x, y + 1) not in graph[1:]:
-            if outpostes[x][y + 1].player == name and (x0, y0) != (x, y + 1):
+            if (x, y + 1) in myoutpostes and (x0, y0) != (x, y + 1):
                 # print('check_gra_0_2', x, y + 1)
                 b = graph[:]
                 # print('oh', b)
@@ -19,7 +19,7 @@ def check_neighbors(outpostes, name, graph):
                 # print('oho', a)
     if y - 1 >= 0:
         if (x, y - 1) not in graph[1:]:
-            if outpostes[x][y - 1].player == name and (x0, y0) != (x, y - 1):
+            if (x, y - 1) in myoutpostes and (x0, y0) != (x, y - 1):
                 # print('check_gra_0_2', x, y - 1)
                 b = graph[:]
                 # print('oh', b)
@@ -28,7 +28,7 @@ def check_neighbors(outpostes, name, graph):
                 # print('oho', a)
     if x + 1 <= 10:
         if (x + 1, y) not in graph[1:]:
-            if outpostes[x + 1][y].player == name and (x0, y0) != (x + 1, y):
+            if (x + 1, y) in myoutpostes and (x0, y0) != (x + 1, y):
                     # print('check_gra_0_2', x + 1, y)
                     b = graph[:]
                     # print('oh', b)
@@ -37,7 +37,7 @@ def check_neighbors(outpostes, name, graph):
                     # print('oho', a)
     if x - 1 >= 0:
         if (x - 1, y) not in graph[1:]:
-            if outpostes[x - 1][y].player == name and (x0, y0) != (x - 1, y):
+            if (x - 1, y) in myoutpostes and (x0, y0) != (x - 1, y):
                 # print('check_gra_0_2', x - 1, y)
                 b = graph[:]
                 # print('oh', b)
@@ -47,33 +47,33 @@ def check_neighbors(outpostes, name, graph):
     # print('check_gra_0', a)
     return a
 
-def check_neighbors_0(outpostes, name, x, y):
+def check_neighbors_0(outpostes, name, x, y, myoutpostes):
     a = []
     if y + 1 <= 10:
         # print('check_gra_0_1')
-        if outpostes[x][y + 1].player == name:
+        if (x, y + 1) in myoutpostes:
             # print('check_gra_0_2')
             a.append([(x, y), (x, y + 1)])
     if y - 1 >= 0:
         # print('check_gra_0_1')
-        if outpostes[x][y - 1].player == name:
+        if (x, y - 1) in myoutpostes:
             # print('check_gra_0_2')
             a.append([(x, y), (x, y - 1)])
     if x - 1 >= 0:
         # print('check_gra_0_1', outpostes[x - 1][y].player)
-        if outpostes[x - 1][y].player == name:
+        if (x - 1, y) in myoutpostes:
             # print('check_gra_0_2')
             a.append([(x, y), (x - 1, y)])
     if x + 1 <= 10:
-        if outpostes[x + 1][y].player == name:
+        if (x + 1, y) in myoutpostes:
             # print('check_gra_0_2')
             a.append([(x, y), (x + 1, y)])
     # print('check_gra_0', a)
     return a
 
-def graph(x0, y0, outpostes, name):
+def graph(x0, y0, outpostes, name, myoutpostes):
     graph0 = []
-    for elem_1 in check_neighbors_0(outpostes, name, x0, y0):
+    for elem_1 in check_neighbors_0(outpostes, name, x0, y0, myoutpostes):
         graph0.append(elem_1)
     # print('graph_1', graph0)
     if len(graph0) == 0:
@@ -81,7 +81,7 @@ def graph(x0, y0, outpostes, name):
     while True:
         graph1 = []
         for elem in graph0:
-            for elem_1 in check_neighbors(outpostes, name, elem):
+            for elem_1 in check_neighbors(outpostes, name, elem, myoutpostes):
                 graph1.append(elem_1)
             # print('for graph1', graph1)
             # print()
