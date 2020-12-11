@@ -462,7 +462,7 @@ class Game_field():
                     print(x, y)
                     if abs(x3 - x) == 1 or abs(y3 - y) == 1:
                         print(x, y)
-                        out = self.outpostes[x3][y3].check_stranger(player, player1, self.outpostes[x][y])
+                        out = self.outpostes[x3][y3].check_stranger(player, player1, self.outpostes[x][y], y3, y)
                         if out == None:
                             break
                         elif out:
