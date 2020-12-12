@@ -565,4 +565,7 @@ class Game_field():
             for y in range(self.n):
                 if self.territories[x][y].player == player.name:
                     print('33333333333333333333333333333')
-                    player.resources = {**player.resources, **self.territories[x][y].resources}
+                    resources_i = {}
+                    for elem in player.resources:
+                        resources_i[elem] = player.resources[elem] + self.territories[x][y].resources[elem]
+                    player.resources = resources_i
