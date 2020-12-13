@@ -166,7 +166,11 @@ territories_resources = {'forest': {'gold': -100, 'building': 500, 'food': 0, 'a
                          'mercenaries': {'gold': -100, 'building': 0, 'food': 0, 'army': 500},
                          'enemies': {'gold': 500, 'building': 500, 'food': 0, 'army': -300},
                          'farm': {'gold': -100, 'building': 0, 'food': 200, 'army': 0},
+<<<<<<< HEAD
                          'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0}, 
+=======
+                         'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0},
+>>>>>>> c7bd8ff94da322914c01b1a5f9173cfc1bacf949
                          'farm': {'gold': -100, 'building': 0, 'food': 100, 'army': 0},
                          'pie': {'gold': 0, 'building': -300, 'food': 100, 'army': 0},
                          'wasteland': {'gold': 0, 'building': 0, 'food': 0, 'army': 0}}
