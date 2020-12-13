@@ -563,9 +563,10 @@ class Game_field():
     def get_resourses(self, player):
         for x in range(self.n):
             for y in range(self.n):
-                if self.territories[x][y].player == player.name:
+                if self.territories[x][y].player == player.name and self.territories[x][y].give_res:
                     print('33333333333333333333333333333')
                     resources_i = {}
                     for elem in player.resources:
                         resources_i[elem] = player.resources[elem] + self.territories[x][y].resources[elem]
                     player.resources = resources_i
+                    self.give_res = False

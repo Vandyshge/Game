@@ -11,9 +11,10 @@ im_mercenaries = 1   # загрузка изображения лагеря на
 im_enemies = 1   # загрузка изображения "вражин"
 im_farm = 1   # загрузка изображения фермы
 im_pie = 1   # загрузка изображения "пирожка на полке"
+im_wast = 1
 territories_image = {'forest': im_forest, 'golden vein': im_gold_vein,
                      'mercenaries': im_mercenaries, 'enemies': im_enemies,
-                      'farm': im_farm, 'pie': im_pie}
+                      'farm': im_farm, 'pie': im_pie, 'wasteland': im_wast}
 
 
 x_size = 40  # размер изображений клеток по х
@@ -155,7 +156,8 @@ territories_resources = {'forest': {'gold': -100, 'building': 500, 'food': 0, 'a
                          'mercenaries': {'gold': -200, 'building': 0, 'food': 0, 'army': 500},
                          'enemies': {'gold': 500, 'building': 500, 'food': 0, 'army': -300},
                          'farm': {'gold': -100, 'building': 0, 'food': 200, 'army': 0},
-                         'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0}}
+                         'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0}, 
+                         'wasteland': {'gold': 0, 'building': 0, 'food': 0, 'army': 0}}
 
 cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
 name = cells[randint(0, len(cells) - 1)]
@@ -167,10 +169,11 @@ class Territory():
         self.screen = screen
         self.player = ''
 
-        cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
+        cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie', 'wasteland']
         self.name = cells[randint(0, len(cells) - 1)]
         self.image = territories_image[self.name]
         self.resources = territories_resources[self.name]
+        self.give_res = True
 
     def draw(self):
         pass
