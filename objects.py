@@ -162,15 +162,7 @@ dict_cells = {'forest': '+building -gold', 'golden vein': '+gold', 'mercenaries'
 territories_resources = {'forest': {'gold': -100, 'building': 500, 'food': 0, 'army': 0},
                          'golden vein': {'gold': 1000, 'building': 0, 'food': 0, 'army': 0},
                          'mercenaries': {'gold': -100, 'building': 0, 'food': 0, 'army': 500},
-                         'enemies': {'gold': 500, 'building': 500, 'food': 0, 'army': -300},
-<<<<<<< HEAD
-                         'farm': {'gold': -100, 'building': 0, 'food': 200, 'army': 0},
-                         'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0}, 
-=======
-                         'farm': {'gold': -100, 'building': 0, 'food': 100, 'army': 0},
-                         'pie': {'gold': 0, 'building': -300, 'food': 100, 'army': 0},
->>>>>>> 960d0fc158d49a4cb74b3a0586a408c7f90a708c
-                         'wasteland': {'gold': 0, 'building': 0, 'food': 0, 'army': 0}}
+                         'enemies': {'gold': 500, 'building': 500, 'food': 0, 'army': -300}}
 
 cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
 name = cells[randint(0, len(cells) - 1)]
