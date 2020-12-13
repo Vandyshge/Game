@@ -9,6 +9,7 @@ from objects import *
 from ter import *
 from player import *
 
+
 class Mouse():
     def __init__(self):
         self.x = 0
@@ -16,7 +17,6 @@ class Mouse():
         self.p = False
         self.enter = False
         self.cycle = []
-
 
 
 class Game():
@@ -51,10 +51,11 @@ class Game():
             out1 = self.step_computer(clock)
             if out1 == 'exit':
                 return True
-            print('----------------------------------------------------------------------------------------------------------------------')
+            print('-------------------------------------------------'
+                  '---------------------------------------------------------------------')
             if i == 3:
-                gamer.resources['gold'] += 300
-                computer.resources['gold'] += 300
+                gamer.resources['gold'] += 100
+                computer.resources['gold'] += 100
                 i = 0
             else:
                 i += 1
@@ -135,11 +136,10 @@ class Game():
         Mouse.enter = False
         game_field.p_outpost = None
 
-        if gamer.resources['army'] < 1000 * gamer.resources['food'] and gamer.resources['food'] > 0:
-            gamer.resources['army'] += int(np.log(gamer.resources['food']) * 100)
+        if gamer.resources['army'] < 100 * gamer.resources['food'] and gamer.resources['food'] > 0:
+            gamer.resources['army'] += gamer.resources['food']
 
         return 'finish'
-
 
     def step_computer(self, clock):
         self.step_computer_outpost = False
@@ -218,9 +218,12 @@ class Board():
         self.x = 50
         self.y = 50
 
-        self.g_b = [100, 100]
-        self.g_f = [100, 100]
-        self.g_a = [100, 100]
+        self.g_b = [100, 90]
+        self.g_f = [100, 90]
+        self.g_a = [100, 90]
+        self.b_g = [100, 90]
+        self.f_g = [100, 90]
+        self.a_g = [100, 90]
 
         self.t0 = 1 * FPS
         self.t = 0
@@ -252,6 +255,18 @@ class Board():
         text0 = f0.render(f'{self.g_a[0]}*gold --> {self.g_a[1]}*army', 5, WHITE)
         self.screen.blit(text0, (self.x + 10, self.y + 210))
 
+        f0 = pygame.font.Font(None, 24)
+        text0 = f0.render(f'{self.b_g[0]}*building --> {self.b_g[1]}*gold', 5, WHITE)
+        self.screen.blit(text0, (self.x + 10, self.y + 235))
+
+        f0 = pygame.font.Font(None, 24)
+        text0 = f0.render(f'{self.f_g[0]}*food --> {self.f_g[1]}*gold', 5, WHITE)
+        self.screen.blit(text0, (self.x + 10, self.y + 260))
+
+        f0 = pygame.font.Font(None, 24)
+        text0 = f0.render(f'{self.a_g[0]}*army --> {self.a_g[1]}*gold', 5, WHITE)
+        self.screen.blit(text0, (self.x + 10, self.y + 285))
+
         if self.t == 0:
             if (Mouse.x > self.x + 10) and (Mouse.x < self.x + 10 + 150) and (Mouse.y > self.y + 160) and (Mouse.y < self.y + 160 + 20) and Mouse.p and player.resources['gold'] >= self.g_b[0]:
                 self.exchange_gold_building(player)
@@ -262,9 +277,17 @@ class Board():
             if (Mouse.x > self.x + 10) and (Mouse.x < self.x + 10 + 150) and (Mouse.y > self.y + 210) and (Mouse.y < self.y + 210 + 20) and Mouse.p and player.resources['gold'] >= self.g_a[0]:
                 self.exchange_gold_army(player)
                 self.t = self.t0
+            if (Mouse.x > self.x + 10) and (Mouse.x < self.x + 10 + 150) and (Mouse.y > self.y + 235) and (Mouse.y < self.y + 235 + 20) and Mouse.p and player.resources['gold'] >= self.b_g[0]:
+                self.exchange_building_gold(player)
+                self.t = self.t0
+            if (Mouse.x > self.x + 10) and (Mouse.x < self.x + 10 + 150) and (Mouse.y > self.y + 260) and (Mouse.y < self.y + 260 + 20) and Mouse.p and player.resources['gold'] >= self.f_g[0]:
+                self.exchange_food_gold(player)
+                self.t = self.t0
+            if (Mouse.x > self.x + 10) and (Mouse.x < self.x + 10 + 150) and (Mouse.y > self.y + 285) and (Mouse.y < self.y + 285 + 20) and Mouse.p and player.resources['gold'] >= self.a_g[0]:
+                self.exchange_army_gold(player)
+                self.t = self.t0
         else:
             self.t -= 1
-
 
     def exchange_gold_building(self, player):
         player.resources['gold'] -= self.g_b[0]
@@ -278,6 +301,17 @@ class Board():
         player.resources['gold'] -= self.g_a[0]
         player.resources['army'] += self.g_a[1]
 
+    def exchange_building_gold(self, player):
+        player.resources['gold'] += self.b_g[0]
+        player.resources['building'] -= self.b_g[1]
+
+    def exchange_food_gold(self, player):
+        player.resources['gold'] += self.b_f[0]
+        player.resources['food'] -= self.b_f[1]
+
+    def exchange_army_gold(self, player):
+        player.resources['gold'] += self.a_g[0]
+        player.resources['army'] -= self.a_g[1]
 
 
 class Game_field():
@@ -330,7 +364,6 @@ class Game_field():
         x, y = self.y_x(self.y_min + self.dy * (j + 0.5), k, b), self.y_min + self.dy * (j + 0.5)
         x, y = self.xy(self.x + x, self.y + y)
         return Territory(x, y, self.screen)
-        
 
     def draw(self, player, step_player_outpost, player1):
         game_field.game_field()
@@ -364,7 +397,6 @@ class Game_field():
             x_2, y_2 = self.y_x(y, k_max, b_max), y
             x_2, y_2 = self.xy(x_2 + self.x, y_2 + self.y)
             pygame.draw.line(self.screen, WHITE, [x_1, y_1], [x_2, y_2], 1)
-
 
     def y_x(self, y, k, b):
         return (y - b) / (k + 10**(-3))
@@ -460,7 +492,7 @@ class Game_field():
             if Mouse.p and self.outpostes[x3][y3].player == '' and not step_player_outpost and self.outpostes[x3][y3].cost <= player.resources['gold']:
                 for x, y in player1.myoutpostes_build:
                     print(x, y)
-                    if abs(x3 - x) == 1 or abs(y3 - y) == 1:
+                    if (abs(x3 - x) == 1 or abs(x3 - x) == 0) and (abs(y3 - y) == 1 or abs(y3 - y) == 0):
                         print(x, y)
                         out = self.outpostes[x3][y3].check_stranger(player, player1, self.outpostes[x][y], y3, y)
                         if out == None:
@@ -495,7 +527,6 @@ class Game_field():
             self.outpostes[x][y].draw()
         for x, y in computer.myoutpostes_build:
             self.outpostes[x][y].draw()
-
 
     def draw_territories(self):
         for j in range(self.n):
