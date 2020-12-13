@@ -351,7 +351,7 @@ class Game_field():
                 b = self.b_sol(self.x_min + self.dx * i, self.y_min)
                 x, y = self.y_x(self.y_min + self.dy * j, k, b), self.y_min + self.dy * j
                 x, y = self.xy(self.x + x, self.y + y)
-                self.outpostes[i][j] = Outpost(int(x), int(y), self.screen)
+                self.outpostes[i][j] = Outpost(int(x), int(y), self.screen, i, j)
 
     def init_territorie(self):
         for i in range(self.n):
@@ -363,7 +363,7 @@ class Game_field():
         b = self.b_sol(self.x_min + self.dx * (i + 0.5), self.y_min)
         x, y = self.y_x(self.y_min + self.dy * (j + 0.5), k, b), self.y_min + self.dy * (j + 0.5)
         x, y = self.xy(self.x + x, self.y + y)
-        return Territory(x, y, self.screen)
+        return Territory(x, y, self.screen, i, j)
 
     def draw(self, player, step_player_outpost, player1):
         game_field.game_field()
@@ -451,7 +451,7 @@ class Game_field():
 
         if self.pos == 'Territories' and x3 >= 0 and x3 <= 9 and y3 >= 0 and y3 <= 9:
             f0 = pygame.font.Font(None, 36)
-            text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.territories[x3][y3].x, self.outpostes[x3][y3].y, 'Outpost'), 5, WHITE)
+            text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.territories[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Territories'), 5, WHITE)
             self.screen.blit(text0, (300, 5))
 
             self.territories[x3][y3].draw_information()
@@ -475,7 +475,7 @@ class Game_field():
         # print(self.p_outpost)
         if self.pos == 'Outpost' and x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
             f0 = pygame.font.Font(None, 36)
-            text0 = f0.render('x = {}, y = {}, pos = {}'.format(x3, y3, 'Outpost'), 5, WHITE)
+            text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
             self.screen.blit(text0, (300, 5))
 
             if self.p_outpost == None:

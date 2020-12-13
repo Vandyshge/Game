@@ -27,7 +27,7 @@ y_size_op = 20  # размер изображений аванпоста по у
 
 # Класс аванпостов
 class Outpost:
-    def __init__(self, x, y, screen, moves=3, cost=100):
+    def __init__(self, x, y, screen, x_list, y_list, moves=3, cost=100):
         """
         x, y - координаты аванпоста
         built - проверка, построен ли аванпост
@@ -44,6 +44,8 @@ class Outpost:
         self.screen = screen
         self.exist = True   # надо будет дописать это в основную программу
         self.built = 0
+        self.x_list = x_list
+        self.y_list = y_list
 
     # Рисуем аванпост
     def draw(self):
@@ -163,13 +165,10 @@ territories_resources = {'forest': {'gold': -100, 'building': 500, 'food': 0, 'a
                          'golden vein': {'gold': 1000, 'building': 0, 'food': 0, 'army': 0},
                          'mercenaries': {'gold': -100, 'building': 0, 'food': 0, 'army': 500},
                          'enemies': {'gold': 500, 'building': 500, 'food': 0, 'army': -300},
-<<<<<<< HEAD
                          'farm': {'gold': -100, 'building': 0, 'food': 200, 'army': 0},
                          'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0}, 
-=======
                          'farm': {'gold': -100, 'building': 0, 'food': 100, 'army': 0},
                          'pie': {'gold': 0, 'building': -300, 'food': 100, 'army': 0},
->>>>>>> 960d0fc158d49a4cb74b3a0586a408c7f90a708c
                          'wasteland': {'gold': 0, 'building': 0, 'food': 0, 'army': 0}}
 
 cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
@@ -177,12 +176,14 @@ name = cells[randint(0, len(cells) - 1)]
 
 
 class Territory():
-    def __init__(self, x, y, screen, get_resources):
+    def __init__(self, x, y, screen, x_list, y_list):
         self.x = x
         self.y = y
         self.screen = screen
         self.player = ''
-        self.get_resources = get_resources   # Хз, правильно ли поняла тебя
+
+        self.x_list = x_list
+        self.y_list = y_list
 
         cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie', 'wasteland']
         self.name = cells[randint(0, len(cells) - 1)]
