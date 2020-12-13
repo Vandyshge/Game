@@ -11,13 +11,14 @@ im_mercenaries = 1   # загрузка изображения лагеря на
 im_enemies = 1   # загрузка изображения "вражин"
 im_farm = 1   # загрузка изображения фермы
 im_pie = 1   # загрузка изображения "пирожка на полке"
+im_wast = 1
 territories_image = {'forest': im_forest, 'golden vein': im_gold_vein,
                      'mercenaries': im_mercenaries, 'enemies': im_enemies,
-                      'farm': im_farm, 'pie': im_pie}
+                      'farm': im_farm, 'pie': im_pie, 'wasteland': im_wast}
 
 
-x_size = 40  # размер изображений клеток по х
-y_size = 40  # размер изображений клеток по у
+x_size = 100  # размер изображений клеток по х
+y_size = 100  # размер изображений клеток по у
 
 
 x_size_op = 20  # размер изображений авапоста по х
@@ -86,7 +87,7 @@ class Outpost:
             f0 = pg.font.Font(None, 16)
             text0 = f0.render('ускорить'.format(self.moves), 5, WHITE)
             self.screen.blit(text0, (self.x, self.y - 20))
-            if x > self.x and x < self.x + 50 and y > self.y - 20 and y < self.y - 10 and p:
+            if (x > self.x) and (x < self.x + 50) and (y > self.y - 20) and (y < self.y - 10) and p:
                 print('1234')
                 return True
             return False
@@ -97,7 +98,6 @@ class Outpost:
             text0 = f0.render(f'{self.player}', 5, WHITE)
             self.screen.blit(text0, (self.x + 5, self.y - 25))
             return False
-
 
     # Уменьшаем количество ходов, оставшихся до постройки
     def build_outposte(self):
@@ -119,29 +119,38 @@ class Outpost:
     def check_stranger(self, player1, player2, outpost, y0, y):
         print(player1.resources['army'])
         print(player2.resources['army'])
-        if self.player != outpost.player and self.moves != 0 and outpost.moves != 0 and (player1.resources['army'] != 0 or player2.resources['army'] != 0):
+        if self.player != outpost.player and self.moves != 0 and outpost.moves != 0 and \
+                (player1.resources['army'] != 0 or player2.resources['army'] != 0):
             self.dispute = 1
             outpost.dispute = 1
             dice = randint(0, 100)
             '''
             Идет сравнение случайного числа с армия1*кпд1/(армия1*кпд1+армия2*кпд2)
-            Кпд вычисляется по формуле: -(коорд.п отн своей стороны - 1)**2/150 + 1
+            Кпд вычисляется по формуле: -(коорд.п отн своей стороны)**2/150 + 1
             '''
             if player1.name == 'computer':
-                d1 = 12 - y0
-                d2 = y - 1
-                if dice > int(100*player1.resources['army']*((150-d1**2)/150)/(player1.resources['army']*((150-d1**2)/150)
-                             + player2.resources['army']*((150-d2**2)/150))):   # ХЗ, как нормально обратиться к армии
+                d1 = 11 - y0
+                d2 = y
+                if dice > int(100*player1.resources['army']*((150-d1**2)/150)
+                        /(player1.resources['army']*((150-d1**2)/150) + player2.resources['army']*((150-d2**2)/150))):
+                    player2.resources['army'] = int(0.9 * player2.resources['army'])
+                    player1.resources['army'] = int(0.7 * player1.resources['army'])
                     return False
                 else:
+                    player1.resources['army'] = int(0.9 * player1.resources['army'])
+                    player2.resources['army'] = int(0.7 * player2.resources['army'])
                     return True
             else:
-                d1 = y0 - 1
-                d2 = 12 - y
-                if dice > int(100*player1.resources['army']*((150-d1**2)/150)/(player1.resources['army']*((150-d1**2)/150)
-                             + player2.resources['army']*((150-d2**2)/150))):   # ХЗ, как нормально обратиться к армии
+                d1 = y0
+                d2 = 11 - y
+                if dice > int(100*player1.resources['army']*((150-d1**2)/150)
+                        /(player1.resources['army']*((150-d1**2)/150) + player2.resources['army']*((150-d2**2)/150))):
+                    player2.resources['army'] = int(0.9 * player2.resources['army'])
+                    player1.resources['army'] = int(0.7 * player1.resources['army'])
                     return False
                 else:
+                    player1.resources['army'] = int(0.9 * player1.resources['army'])
+                    player2.resources['army'] = int(0.7 * player2.resources['army'])
                     return True
         return None
 
@@ -152,22 +161,25 @@ dict_cells = {'forest': '+building -gold', 'golden vein': '+gold', 'mercenaries'
 
 territories_resources = {'forest': {'gold': -100, 'building': 500, 'food': 0, 'army': 0},
                          'golden vein': {'gold': 1000, 'building': 0, 'food': 0, 'army': 0},
-                         'mercenaries': {'gold': -200, 'building': 0, 'food': 0, 'army': 500},
+                         'mercenaries': {'gold': -100, 'building': 0, 'food': 0, 'army': 500},
                          'enemies': {'gold': 500, 'building': 500, 'food': 0, 'army': -300},
-                         'farm': {'gold': -100, 'building': 0, 'food': 200, 'army': 0},
-                         'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0}}
+                         'farm': {'gold': -100, 'building': 0, 'food': 100, 'army': 0},
+                         'pie': {'gold': 0, 'building': -300, 'food': 100, 'army': 0},
+                         'wasteland': {'gold': 0, 'building': 0, 'food': 0, 'army': 0}}
 
 cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
 name = cells[randint(0, len(cells) - 1)]
 
+
 class Territory():
-    def __init__(self, x, y, screen):
+    def __init__(self, x, y, screen, get_resources):
         self.x = x
         self.y = y
         self.screen = screen
         self.player = ''
+        self.get_resources = get_resources   # Хз, правильно ли поняла тебя
 
-        cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
+        cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie', 'wasteland']
         self.name = cells[randint(0, len(cells) - 1)]
         self.image = territories_image[self.name]
         self.resources = territories_resources[self.name]
