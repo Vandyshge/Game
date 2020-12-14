@@ -161,12 +161,12 @@ dict_cells = {'forest': '+building -gold', 'golden vein': '+gold', 'mercenaries'
                    'enemies': '-army +building +money', 'farm': '+food - gold', 'pie': '+food -building'}
 
 
-territories_resources = {'forest': {'gold': -100, 'building': 500, 'food': 0, 'army': 0},
+territories_resources = {'forest': {'gold': -200, 'building': 500, 'food': 0, 'army': 0},
                          'golden vein': {'gold': 1000, 'building': 0, 'food': 0, 'army': 0},
-                         'mercenaries': {'gold': -100, 'building': 0, 'food': 0, 'army': 500},
+                         'mercenaries': {'gold': -200, 'building': 0, 'food': 0, 'army': 500},
                          'enemies': {'gold': 500, 'building': 500, 'food': 0, 'army': -300},
-                         'farm': {'gold': -100, 'building': 0, 'food': 200, 'army': 0},
-                         'pie': {'gold': 0, 'building': -300, 'food': 300, 'army': 0}, 
+                         'pie': {'gold': 0, 'building': -200, 'food': 100, 'army': 0},
+                         'farm': {'gold': -200, 'building': 0, 'food': 100, 'army': 0},
                          'wasteland': {'gold': 0, 'building': 0, 'food': 0, 'army': 0}}
 
 cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
