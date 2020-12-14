@@ -12,23 +12,38 @@ from player import *
 
 class Mouse():
     def __init__(self):
+        '''
+        :param x: x координата мышки
+        :param y: y координата мышки
+        :param p: зажата ли кнопка мыши
+        :param enter: нажат ли Enter
+        '''
         self.x = 0
         self.y = 0
         self.p = False
         self.enter = False
-        self.cycle = []
 
 
 class Game():
     def __init__(self, name, screen):
+        '''
+        :param name: имя игрока
+        :param screen: экран на который выводиться изображение
+        :param step_gamer_outpost: поставил ли игрок аванпост в этот ход
+        :param step_computer_outpost: поставил ли компьютер аванпост в этот ход
+        :param x_step: x координата кнопки "закончить ход"
+        :param y_step: y координата кнопки "закончить ход"
+        :param t: время задержки(сейчас)
+        :param t0: время задержки(по дефолту)
+        :param outpostes_num: количество занятых аванпостов
+        :param win: имя того кто победил
+        '''
         global Mouse
         Mouse = Mouse()
         self.name = name
         self.screen = screen
         self.step_gamer_outpost = False
-        self.step_gamer_finish = False
         self.step_computer_outpost = False
-        self.step_computer_finish = False
         global x_step, y_step
         x_step = 850
         y_step = 650
@@ -39,6 +54,10 @@ class Game():
         self.win = ''
 
     def game(self):
+        '''
+        основная функция игры
+        :return: True - нажали на крестик
+        '''
         self.init_game()
 
         clock = pg.time.Clock()
@@ -79,6 +98,9 @@ class Game():
         return True
 
     def init_game(self):
+        '''
+        инициация игры, всех объектов и тд
+        '''
         global gamer
         gamer = Gamer(self.name)
         global computer
@@ -91,6 +113,11 @@ class Game():
         board = Board(self.screen)
 
     def step_gamer(self, clock):
+        '''
+        ход игрока
+        :param clock: объект часов
+        :return: "exit" - нажата кнопка выход, "finish" - ход закончен
+        '''
         self.step_gamer_outpost = False
         self.step_gamer_finish = False
         while True:
@@ -157,6 +184,11 @@ class Game():
         return 'finish'
 
     def step_computer(self, clock):
+        '''
+        ход компьютера
+        :param clock: объект часов
+        :return: "exit" - нажата кнопка выход, "finish" - ход закончен
+        '''
         self.step_computer_outpost = False
         self.step_computer_finish = False
         while True:
@@ -225,6 +257,10 @@ class Game():
         return 'finish'
 
     def check_game_over(self):
+        '''
+        проверка окончания игры
+        :return: закончена или нет
+        '''
         if self.outpostes_num == 121:
             n_computer = 0
             n_gamer = 0
@@ -246,6 +282,11 @@ class Game():
         return False
 
     def after_game_over(self, clock):
+        '''
+        экран игры после окончания
+        :param clock: объект часов
+        :return: exit - выход из приложения, menu - нажата кнопка "вернуться в меню"
+        '''
         clock.tick(FPS)
             # print(computer.myoutpostes, computer.myoutpostes_build)
         for event in pygame.event.get():
@@ -302,6 +343,16 @@ class Game():
 
 class Board():
     def __init__(self, screen):
+        '''
+        таблиуа ресурсов и обмена
+        :param screen:
+        :param x: x координата таблицы
+        :param y: y координата таблицы
+        :param screen: экран, на который выводиться
+        :param g_b: по первым буквам: g(gold) --> b(building). Курс обмена ресурсов
+        :param t: время задержки(сейчас)
+        :param t0: время задержки(по дефолту)
+        '''
         self.screen = screen
         self.x = 50
         self.y = 50
@@ -317,6 +368,10 @@ class Board():
         self.t = 0
 
     def draw(self, player):
+        '''
+        рисует таблицу
+        :param player: игрок
+        '''
         rect(self.screen, RED, (self.x, self.y, 150, 300))
 
         f0 = pygame.font.Font(None, 24)
@@ -331,6 +386,10 @@ class Board():
             i += 25
 
     def draw_exchange(self, player):
+        '''
+        рисует обмен ресурсов и производит обмен
+        :param player: объект-игрок
+        '''
         f0 = pygame.font.Font(None, 24)
         text0 = f0.render(f'{self.g_b[0]}*gold --> {self.g_b[1]}*building', 5, WHITE)
         self.screen.blit(text0, (self.x + 10, self.y + 160))
@@ -404,35 +463,40 @@ class Board():
 
 class Game_field():
     def __init__(self, screen):
-        self.screen = screen
-        self.x = 250
-        self.y = 100
-        self.y0 = 2000
-        self.x0 = 461
-        self.x_max = 500
+        '''
+        игровое поле
+        :param screen: экран
+        '''
+        self.screen = screen # экран
+        self.x = 250 # x координата нижней левой точки в Нормальной СО
+        self.y = 100 # y координата нижней левой точки в Нормальной СО
+        self.y0 = 2000 # y координата точки Перспектива в Нормальной СО
+        self.x0 = 461 # x координата точки Перспектива в Нормальной СО
+        self.x_max = 500 # параметры поля
         self.y_max = 450
         self.x_min = 0
         self.y_min = 0
-        self.n = 10
+        self.n = 10 # кол-во полей
 
-        self.p_outpost = None
-        self.t0 = 1*FPS
-        self.t = 0
-        self.t1 = 0
+        self.p_outpost = None # у какого аванпоста фиксируется информация
+        self.t0 = 1*FPS # время задерки(дефолтное)
+        self.t = 0 # время задержки(сейчас)
+        self.t1 = 0 # время задержки(сейчас)
 
-        self.x3 = 0
+        self.x3 = 0 # координаты объекта на оторый наводиться мышка
         self.y3 = 0
-        self.pos = ''
+        self.pos = '' # тип этого объека
 
-        # self.no = False
-
-        self.dx = int((self.x_max - self.x_min) / self.n)
+        self.dx = int((self.x_max - self.x_min) / self.n) # параметры поля
         self.dy = int((self.y_max - self.y_min) / self.n)
 
-        self.outpostes = [[0 for j in range(self.n + 1)] for i in range(self.n + 1)]
-        self.territories = [[0 for j in range(self.n)] for i in range(self.n)]
+        self.outpostes = [[0 for j in range(self.n + 1)] for i in range(self.n + 1)] # массив с аванпостами(объектами)
+        self.territories = [[0 for j in range(self.n)] for i in range(self.n)] # массив с территориями(объектами)
 
     def init_outpost(self):
+        '''
+        инициализиркуется массив аванпостов
+        '''
         for j in range(self.n + 1):
             for i in range(self.n + 1):
                 k = self.k_sol(self.x_min + self.dx * i, self.y_min)
@@ -442,11 +506,20 @@ class Game_field():
                 self.outpostes[i][j] = Outpost(int(x), int(y), self.screen, i, j)
 
     def init_territorie(self):
+        '''
+        инициализируется массив аванпостов
+        '''
         for i in range(self.n):
             for j in range(self.n):
                 self.territories[i][j] = self.create_obj(j, i)
 
     def create_obj(self, j, i):
+        '''
+        создаеться территория и считаються ее координаты в СО pygame
+        :param j: x координата территории
+        :param i: y координата территории
+        :return: объект-территория
+        '''
         k = self.k_sol(self.x_min + self.dx * (i + 0.5), self.y_min)
         b = self.b_sol(self.x_min + self.dx * (i + 0.5), self.y_min)
         x, y = self.y_x(self.y_min + self.dy * (j + 0.5), k, b), self.y_min + self.dy * (j + 0.5)
@@ -454,6 +527,13 @@ class Game_field():
         return Territory(x, y, self.screen, i, j)
 
     def draw(self, player, step_player_outpost, player1):
+        '''
+        рисуется поле, аванпосты, территории и обрабатываеться ход
+        :param player: игрок делающий ход
+        :param step_player_outpost: поставил ли игрок аванпост
+        :param player1: противник
+        :return: построен аванпост или нет
+        '''
         game_field.game_field()
         game_field.draw_outpostes()
         # game_field.grid()
@@ -461,13 +541,19 @@ class Game_field():
         return game_field.interaction_with_fied(player, step_player_outpost, player1)
 
     def draw_game_over(self):
+        '''
+        рисуется поле, аванпосты, территории и обрабатывается ход после завершения игры
+        '''
         game_field.game_field()
         game_field.draw_outpostes()
         # game_field.grid()
         game_field.draw_territories()
-        return game_field.interaction_with_fied_game_over()
+        game_field.interaction_with_fied_game_over()
 
     def grid(self):
+        '''
+        рабочая функция, рисуется сетка, по которой можно считать координаты
+        '''
         # pg.draw.circle(self.screen, RED, (10, 10), 10000)
         for x in range(10, weight + 1, 10):
             line(self.screen, WHITE, [int(x), int(0)], [int(x), int(height)], 1)
@@ -475,6 +561,9 @@ class Game_field():
             line(self.screen, WHITE, [int(0), int(y)], [int(weight), int(y)], 1)
 
     def game_field(self):
+        '''
+        рисует поле по заданным параметрам
+        '''
         for x in range(self.x_min, self.x_max + self.dx, self.dx):
             k = self.k_sol(x, self.y_min)
             b = self.b_sol(x, self.y_min)
@@ -494,24 +583,55 @@ class Game_field():
             pygame.draw.line(self.screen, WHITE, [x_1, y_1], [x_2, y_2], 1)
 
     def y_x(self, y, k, b):
+        '''
+        решает линейное уравнение y = kx + b по y
+        :return: x
+        '''
         return (y - b) / (k + 10**(-3))
 
     def x_y(self, x, k, b):
+        '''
+        решает линейное уравнение y = kx + b по x
+        :return: y
+        '''
         return k * x + b
 
     def xy(self, x, y):
+        '''
+        конвертирует x, y из СО pygame в нормальное СО
+        :return: x, y
+        '''
         return (x, height - y)
 
     def xy_inv(self, x, y):
+        '''
+        конвертирует x, y из нормальное СО в СО pygame
+        :return: x, y
+        '''
         return (x, abs(y - height))
 
     def k_sol(self, x, y):
+        '''
+        решает линейное уравнение y = kx + b по координатам 2ух точек, одна из которых точка Перспектива
+        :return: k
+        '''
         return (self.y0 - y) / (self.x0 - x + 10**(-3))
 
     def b_sol(self, x, y):
+        '''
+        решает линейное уравнение y = kx + b по координатам 2ух точек, одна из которых точка Перспектива
+        :return: b
+        '''
         return (self.x0 * y - self.y0 * x) / (self.x0 - x + 10**(-3))
 
     def interaction_with_fied(self, player, step_player_outpost, player1):
+        '''
+        взаимодействие с полем: вывод информации, постройка аванпота(битва за территорию)
+        :param player: игрок
+        :param step_player_outpost: постороен ли уже аванпост в этот ход
+        :param player1: противник
+        :return: построен аванпост или нет
+        '''
         x0, y0 = self.xy(Mouse.x, Mouse.y)
         x0, y0 = x0 - self.x, y0 - self.y
         k, b = self.k_sol(x0, y0), self.b_sol(x0, y0)
@@ -614,6 +734,9 @@ class Game_field():
         return False
 
     def interaction_with_fied_game_over(self):
+        '''
+        взаимодействие с полем после завершения игры: вывод информации и тд
+        '''
         x0, y0 = self.xy(Mouse.x, Mouse.y)
         x0, y0 = x0 - self.x, y0 - self.y
         k, b = self.k_sol(x0, y0), self.b_sol(x0, y0)
@@ -679,6 +802,9 @@ class Game_field():
                 self.t = self.t0
 
     def draw_outpostes(self):
+        '''
+        рисование аванпостов
+        '''
         for x, y in gamer.myoutpostes:
             self.outpostes[x][y].draw()
         for x, y in gamer.myoutpostes_build:
@@ -689,11 +815,19 @@ class Game_field():
             self.outpostes[x][y].draw()
 
     def draw_territories(self):
+        '''
+        рисование территорий
+        '''
         for j in range(self.n):
             for i in range(self.n):
                 self.territories[i][j].draw()
 
     def check_cycle(self, player):
+        '''
+        ищет новые циклы среди аванпостов игрока
+        :param player: игрок
+        :return: [] - если нет циклов или cycle - если нашла цикл
+        '''
         a = player.myoutpostes[:]
         # print(player.cycle)
         b = []
@@ -721,26 +855,45 @@ class Game_field():
         return []
 
     def change_ter(self, cycle, player):
+        '''
+        изменяет территории и аванпосты находящиеся в цикле
+        :param cycle: новый цикл
+        :param player: игрок
+        '''
         for i in range(self.n):
             for j in range(self.n):
                 if self.territories[i][j].player == '':
                     if prove(cycle, i, j):
                         # print(cycle)
                         self.territories[i][j].player = player.name
-                        self.change_near_out(player, i, j)
+                        self.change_near_out(i, j)
         self.change_cycle_out(player, cycle)
 
-    def change_near_out(self, player, x, y):
+    def change_near_out(self, x, y):
+        '''
+        захватывает все аванпосты вокруг захваченной территории
+        :param x: координаты территории
+        :param y:
+        '''
         self.outpostes[x][y].player = 'occupied'
         self.outpostes[x + 1][y].player = 'occupied'
         self.outpostes[x + 1][y + 1].player = 'occupied'
         self.outpostes[x][y + 1].player = 'occupied'
 
     def change_cycle_out(self, player, cycle):
+        '''
+        изменяет названия всех аванпостов в цикле
+        :param player: игрок
+        :param cycle: цикл
+        '''
         for x, y in cycle:
             self.outpostes[x][y].player = player.name
 
     def built_outposts(self, player):
+        '''
+        строит все аванпосты игрока за один ход
+        :param player: игрок
+        '''
         outpostes = player.myoutpostes_build[:]
         for x, y in outpostes:
             # print(x, y)
@@ -752,6 +905,10 @@ class Game_field():
                 self.outpostes[x][y].check_build()
 
     def get_resourses(self, player):
+        '''
+        дает игроку ресурсы с захваченных территорий
+        :param player: игрок
+        '''
         for x in range(self.n):
             for y in range(self.n):
                 if self.territories[x][y].player == player.name and self.territories[x][y].give_res:
