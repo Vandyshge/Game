@@ -35,6 +35,8 @@ class Game():
 
         self.t = 0
         self.t0 = 1*FPS
+        self.outpostes_num = 120
+        self.win = ''
 
     def game(self):
         self.init_game()
@@ -48,9 +50,15 @@ class Game():
             out = self.step_gamer(clock)
             if out == 'exit':
                 return True
+            out2 = self.check_game_over()
+            if out2:
+                break
             out1 = self.step_computer(clock)
             if out1 == 'exit':
                 return True
+            out2 = self.check_game_over()
+            if out2:
+                break
             print('-------------------------------------------------'
                   '---------------------------------------------------------------------')
             if i == 3:
@@ -60,6 +68,12 @@ class Game():
             else:
                 i += 1
 
+        while True:
+            out = self.after_game_over(clock)
+            if out == 'exit':
+                return True
+            elif out == 'menu':
+                return True
             # print('--------------------------------')
 
         return True
@@ -118,6 +132,7 @@ class Game():
             out = game_field.draw(gamer, self.step_gamer_outpost, computer)
             if out:
                 self.step_gamer_outpost = True
+                self.outpostes_num += 1
             print(self.step_gamer_outpost)
             if (Mouse.x > x_step) and (Mouse.x < x_step + 130) and (Mouse.y > y_step) and (Mouse.y < y_step + 30) and Mouse.p and self.t == 0:
                 self.t = self.t0
@@ -185,6 +200,7 @@ class Game():
             out = game_field.draw(computer, self.step_computer_outpost, gamer)
             if out:
                 self.step_computer_outpost = True
+                self.outpostes_num += 1
             # print(self.step_gamer_outpost)
             if (Mouse.x > x_step) and (Mouse.x < x_step + 130) and (Mouse.y > y_step) and (Mouse.y < y_step + 30) and Mouse.p and self.t == 0:
                 self.t = self.t0
@@ -209,7 +225,79 @@ class Game():
         return 'finish'
 
     def check_game_over(self):
-        pass
+        if self.outpostes_num == 121:
+            n_computer = 0
+            n_gamer = 0
+            for i in range(game_field.n):
+                for j in range(game_field.n):
+                    if game_field.territories[i][j].player == computer.name:
+                        n_computer += 1
+                    elif game_field.territories[i][j].player == '':
+                        pass
+                    else:
+                        n_gamer += 1
+            if n_computer > n_gamer:
+                self.win = 'computer'
+            elif n_computer == n_gamer:
+                self.win = 'draw'
+            else:
+                self.win = 'gamer'
+            return True
+        return False
+
+    def after_game_over(self, clock):
+        clock.tick(FPS)
+            # print(computer.myoutpostes, computer.myoutpostes_build)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return 'exit'
+            if event.type == pygame.MOUSEMOTION:
+                # запись новых координат мышки(если она подвинулась)
+                Mouse.x, Mouse.y = event.pos
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # кнопка зажата
+                Mouse.p = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                # кнопка отжата
+                Mouse.p = False
+            if event.type == pygame.KEYDOWN:
+                # кнопка отжата
+                if event.key == pygame.K_RETURN:
+                    Mouse.enter = True
+
+        out = game_field.draw_game_over()
+
+        f0 = pygame.font.Font(None, 36)
+        text0 = f0.render('GAME OVER', 5, WHITE)
+        self.screen.blit(text0, (300, 10))
+
+        if self.win == 'computer':
+            f0 = pygame.font.Font(None, 36)
+            text0 = f0.render('Вы проиграли', 5, WHITE)
+            self.screen.blit(text0, (300, 40))
+        if self.win == 'gamer':
+            f0 = pygame.font.Font(None, 36)
+            text0 = f0.render('Вы выиграли', 5, WHITE)
+            self.screen.blit(text0, (300, 40))
+        if self.win == 'draw':
+            f0 = pygame.font.Font(None, 36)
+            text0 = f0.render('Ничья', 5, WHITE)
+            self.screen.blit(text0, (300, 40))
+
+        rect(self.screen, WHITE, (x_step - 5, y_step - 5, 130, 30))
+        f0 = pygame.font.Font(None, 24)
+        text0 = f0.render('вернуться в меню', 5, MAGENTA)
+        self.screen.blit(text0, (x_step, y_step))
+
+        if (Mouse.x > x_step) and (Mouse.x < x_step + 130) and (Mouse.y > y_step) and (Mouse.y < y_step + 30) and Mouse.p:
+            return 'menu'
+
+        pg.display.update()
+        self.screen.fill(BLACK)
+
+
+
+
 
 
 class Board():
@@ -372,6 +460,13 @@ class Game_field():
         game_field.draw_territories()
         return game_field.interaction_with_fied(player, step_player_outpost, player1)
 
+    def draw_game_over(self):
+        game_field.game_field()
+        game_field.draw_outpostes()
+        # game_field.grid()
+        game_field.draw_territories()
+        return game_field.interaction_with_fied_game_over()
+
     def grid(self):
         # pg.draw.circle(self.screen, RED, (10, 10), 10000)
         for x in range(10, weight + 1, 10):
@@ -517,6 +612,71 @@ class Game_field():
                 # print(player.myoutpostes)
                 return True
         return False
+
+    def interaction_with_fied_game_over(self):
+        x0, y0 = self.xy(Mouse.x, Mouse.y)
+        x0, y0 = x0 - self.x, y0 - self.y
+        k, b = self.k_sol(x0, y0), self.b_sol(x0, y0)
+        x, y = self.y_x(self.y_min, k, b), y0
+        x3, y3 = int((x / self.dx)//1), int((y / self.dy)//1)
+        x33, y33 = int((x / self.dx)//0.25%4), int((y / self.dy)//0.25%4)
+        pygame.draw.circle(self.screen, WHITE, (Mouse.x, Mouse.y), 5)
+
+        if x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
+            if x33 == 3 and y33 == 3:
+                x3 += 1
+                y3 += 1
+                self.pos = 'Outpost'
+            elif x33 == 3 and y33 == 0:
+                x3 += 1
+                self.pos = 'Outpost'
+            elif x33 == 0 and y33 == 3:
+                y3 += 1
+                self.pos = 'Outpost'
+            elif x33 == 0 and y33 == 0:
+                self.pos = 'Outpost'
+            elif x3 <= 9 and y3 <= 9:
+                self.pos = 'Territories'
+
+        if self.pos == 'Territories' and x3 >= 0 and x3 <= 9 and y3 >= 0 and y3 <= 9:
+            # f0 = pygame.font.Font(None, 36)
+            # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.territories[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Territories'), 5, WHITE)
+            # self.screen.blit(text0, (300, 5))
+
+            self.territories[x3][y3].draw_information()
+
+        if self.p_outpost != None:
+            out = self.outpostes[self.p_outpost[0]][self.p_outpost[1]].draw_information(Mouse.x, Mouse.y, Mouse.p)
+            if out and self.t == 0 and self.outpostes[self.p_outpost[0]][self.p_outpost[1]].player == player.name and player.resources['building'] >= 100:
+                self.outpostes[self.p_outpost[0]][self.p_outpost[1]].moves -= 1
+                if self.outpostes[self.p_outpost[0]][self.p_outpost[1]].moves == 0:
+                    player.myoutpostes_build.remove((x3, y3))
+                    player.myoutpostes.append((x3, y3))
+                    self.outpostes[x3][y3].check_build()
+                player.resources['building'] -= 100
+                self.t = self.t0
+        if self.t > 0:
+            self.t -= 1
+        if self.t1 > 0:
+            self.t1 -= 1
+        # if self.t2 > 0:
+        #     self.t2 -= 1
+        # print(self.p_outpost)
+        if self.pos == 'Outpost' and x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
+            # f0 = pygame.font.Font(None, 36)
+            # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
+            # self.screen.blit(text0, (300, 5))
+
+            if self.p_outpost == None:
+                self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
+            # print(self.p_outpost)
+            if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
+                print('------------------------------------------------')
+                self.p_outpost = None
+                self.t = self.t0
+            if Mouse.p and self.t == 0:
+                self.p_outpost = (x3, y3)
+                self.t = self.t0
 
     def draw_outpostes(self):
         for x, y in gamer.myoutpostes:
