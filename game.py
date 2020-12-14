@@ -357,13 +357,13 @@ class Board():
         self.x = 50
         self.y = 50
 
-        self.g_b = [100, 90]
-        self.g_f = [100, 90]
+        self.g_b = [110, 100]
+        self.g_f = [100, 20]
         self.g_a = [100, 90]
         self.b_g = [100, 90]
-        self.f_g = [100, 90]
+        self.f_g = [100, 360]
         self.a_g = [100, 90]
-
+        
         self.t0 = 1 * FPS
         self.t = 0
 
