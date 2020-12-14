@@ -13,45 +13,34 @@ from player import *
 class Mouse():
     def __init__(self):
         '''
-        :param x: x координата мышки
-        :param y: y координата мышки
-        :param p: зажата ли кнопка мыши
-        :param enter: нажат ли Enter
+        Мышка
         '''
-        self.x = 0
-        self.y = 0
-        self.p = False
-        self.enter = False
+        self.x = 0 # x координата мышки
+        self.y = 0 # y координата мышки
+        self.p = False # зажата ли кнопка мыши
+        self.enter = False # нажат ли Enter
 
 
 class Game():
     def __init__(self, name, screen):
         '''
-        :param name: имя игрока
+        игра
         :param screen: экран на который выводиться изображение
-        :param step_gamer_outpost: поставил ли игрок аванпост в этот ход
-        :param step_computer_outpost: поставил ли компьютер аванпост в этот ход
-        :param x_step: x координата кнопки "закончить ход"
-        :param y_step: y координата кнопки "закончить ход"
-        :param t: время задержки(сейчас)
-        :param t0: время задержки(по дефолту)
-        :param outpostes_num: количество занятых аванпостов
-        :param win: имя того кто победил
         '''
         global Mouse
         Mouse = Mouse()
-        self.name = name
-        self.screen = screen
-        self.step_gamer_outpost = False
-        self.step_computer_outpost = False
+        self.name = name # имя игрока
+        self.screen = screen # экран на который выводиться изображение
+        self.step_gamer_outpost = False # поставил ли игрок аванпост в этот ход
+        self.step_computer_outpost = False # поставил ли компьютер аванпост в этот ход
         global x_step, y_step
-        x_step = 850
-        y_step = 650
+        x_step = 850 # x координата кнопки "закончить ход"
+        y_step = 650 # y координата кнопки "закончить ход"
 
-        self.t = 0
-        self.t0 = 1*FPS
-        self.outpostes_num = 120
-        self.win = ''
+        self.t = 0 # время задержки(сейчас)
+        self.t0 = 1*FPS # время задержки(по дефолту)
+        self.outpostes_num = 120 # количество занятых аванпостов
+        self.win = '' # имя того кто победил
 
     def game(self):
         '''
@@ -345,27 +334,21 @@ class Board():
     def __init__(self, screen):
         '''
         таблиуа ресурсов и обмена
-        :param screen:
-        :param x: x координата таблицы
-        :param y: y координата таблицы
         :param screen: экран, на который выводиться
-        :param g_b: по первым буквам: g(gold) --> b(building). Курс обмена ресурсов
-        :param t: время задержки(сейчас)
-        :param t0: время задержки(по дефолту)
         '''
-        self.screen = screen
-        self.x = 50
-        self.y = 50
+        self.screen = screen # экран
+        self.x = 50 # x координата таблицы
+        self.y = 50 # y координата таблицы
 
-        self.g_b = [110, 100]
+        self.g_b = [110, 100] # по первым буквам: g(gold) --> b(building). Курс обмена ресурсов
         self.g_f = [100, 20]
         self.g_a = [100, 90]
         self.b_g = [100, 90]
         self.f_g = [100, 360]
         self.a_g = [100, 90]
         
-        self.t0 = 1 * FPS
-        self.t = 0
+        self.t0 = 1 * FPS # время задержки(сейчас)
+        self.t = 0 # ремя задержки(по дефолту)
 
     def draw(self, player):
         '''
