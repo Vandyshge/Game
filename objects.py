@@ -169,6 +169,15 @@ territories_resources = {'forest': {'gold': -200, 'building': 500, 'food': 0, 'a
                          'farm': {'gold': -200, 'building': 0, 'food': 100, 'army': 0},
                          'wasteland': {'gold': 0, 'building': 0, 'food': 0, 'army': 0}}
 
+
+territories_count = {'forest': {'peace': 10, 'war': 50, 'govnilovka': 0},
+                     'golden vein': {'peace': 100, 'war': 20, 'govnilovka': -30},
+                     'mercenaries': {'peace': 10, 'war': 60, 'govnilovka': 0},
+                     'enemies': {'peace': 60, 'war': 50, 'govnilovka': -10},
+                     'farm': {'peace': 50, 'war': 10, 'govnilovka': 0},
+                     'pie': {'peace': 50, 'war': 10, 'govnilovka': 0},
+                     'wasteland': {'peace': 0, 'war': 0, 'govnilovka': 50}}
+
 cells = ['forest', 'golden vein', 'mercenaries', 'enemies', 'farm', 'pie']
 name = cells[randint(0, len(cells) - 1)]
 
