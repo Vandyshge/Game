@@ -41,6 +41,7 @@ class Game0():
         self.t0 = 1*FPS # время задержки(по дефолту)
         self.outpostes_num = 0 # количество занятых аванпостов
         self.win = '' # имя того кто победил
+        self.n_win = 0
 
         self.image_game = pg.image.load('image\game.jpg').convert_alpha()
 
@@ -59,13 +60,13 @@ class Game0():
             # clock.tick(1)
             out = self.step_gamer(clock)
             if out == 'exit':
-                return True
+                return (True, )
             out2 = self.check_game_over()
             if out2:
                 break
             out1 = self.step_computer(clock)
             if out1 == 'exit':
-                return True
+                return (True, )
             out2 = self.check_game_over()
             if out2:
                 break
@@ -81,12 +82,12 @@ class Game0():
         while True:
             out = self.after_game_over(clock)
             if out == 'exit':
-                return True
+                return (True, )
             elif out == 'menu':
-                return True
+                return ('Menu_page', self.win, self.n_win)
             # print('--------------------------------')
 
-        return True
+        return (True, )
 
     def init_game(self):
         '''
@@ -259,10 +260,12 @@ class Game0():
             n_computer = n_computer * 100 + computer.resources['gold'] + computer.resources['army'] + computer.resources['building']
             if n_computer > n_gamer:
                 self.win = 'computer'
+                self.n_win = n_computer
             elif n_computer == n_gamer:
                 self.win = 'draw'
             else:
                 self.win = 'gamer'
+                self.n_win = n_gamer
             return True
         return False
 
