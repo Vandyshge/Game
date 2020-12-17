@@ -5,6 +5,10 @@ from output import *
 
 class Pages():
     def __init__(self, screen):
+        '''
+        страницы
+        :param screen:
+        '''
         self.screen = screen
         self.image_menu = pg.image.load('image\menu.jpg').convert_alpha()
         self.image_rule = pg.image.load('image\\rule.jpg').convert_alpha()

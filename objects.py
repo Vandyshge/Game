@@ -198,16 +198,25 @@ name = cells[randint(0, len(cells) - 1)]
 
 class Territory():
     def __init__(self, x, y, screen, x_list, y_list, y_scale=0):
+        '''
+        территории
+        :param x: координаты в СО pygame
+        :param y:
+        :param screen: экран
+        :param x_list: В СО массива территорий
+        :param y_list:
+        :param y_scale: -
+        '''
         self.x = x
         self.y = y
         self.screen = screen
-        self.player = ''
+        self.player = '' # чья территория
 
         self.x_list = x_list
         self.y_list = y_list
 
         self.y_scale = 0
-
+        # генерация рандомной территории при ините и ее параметров
         cells = ['forest', 'golden_vein', 'mercenaries', 'enemies', 'farm', 'pie', 'wasteland', 'wasteland', 'wasteland']
         self.name = cells[randint(0, len(cells) - 1)]
         self.image = territories_image[self.name]

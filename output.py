@@ -1,4 +1,11 @@
 def output_top_player(type_game, win, n_win):
+    '''
+    обновляет результаты
+    :param type_game: тип игры
+    :param win: кто выиграл
+    :param n_win: какой счет
+    :return:  -
+    '''
     if type_game == 'game0':
         out0 = open('text/top_player_game0.txt', 'r')
         game0 = []
@@ -44,6 +51,10 @@ def output_top_player(type_game, win, n_win):
         out00_w.close()
 
 def input_top_player():
+    '''
+    выдает результаты в виде 2ух массивов
+    :return:
+    '''
     out0 = open('text/top_player_game0.txt', 'r')
     game0 = []
     line = out0.readline().strip()
