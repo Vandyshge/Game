@@ -24,7 +24,7 @@ class Mouse():
 class Game00():
     def __init__(self, name1, name2, screen):
         '''
-        игра
+        игра с дыумя игроками
         :param screen: экран на который выводиться изображение
         '''
         global Mouse
@@ -140,7 +140,7 @@ class Game00():
 
             rect(self.screen, WHITE, (x_step - 5, y_step - 5, 130, 30))
             f0 = pygame.font.Font(None, 24)
-            text0 = f0.render('закончить ход', 5, MAGENTA)
+            text0 = f0.render('закончить ход', 5, СYAN_BOARD)
             self.screen.blit(text0, (x_step, y_step))
 
             if game_field.t1 > 0:
@@ -843,4 +843,4 @@ class Game_field():
                     for elem in player.resources:
                         resources_i[elem] = player.resources[elem] + self.territories[x][y].resources[elem]
                     player.resources = resources_i
-                    self.give_res = False
+                    self.territories[x][y].give_res = False

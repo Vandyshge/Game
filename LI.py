@@ -12,6 +12,9 @@ from output import *
 
 class Labirint_Fantaxiy():
     def __init__(self):
+        '''
+        Основная функция игры
+        '''
         self.screen = pygame.display.set_mode((weight, height))
         self.page = 'Menu_page'
         pygame.init()
@@ -32,8 +35,8 @@ class Labirint_Fantaxiy():
                     self.page = 'Rule_page'
                 elif out == True:
                     finished = True
-                elif out == 'Settings_page':
-                    self.page = 'Settings_page'
+                # elif out == 'Settings_page':
+                #     self.page = 'Settings_page'
                 elif out == 'Game_choose':
                     self.page = 'Game_choose'
                 elif out =='Top_page':
@@ -48,10 +51,9 @@ class Labirint_Fantaxiy():
 
             elif self.page == 'Rule_page':
                 out = pages.rule()
-                if out[0] == 'Game_page':
-                    self.page = 'Game_page'
-                    self.name = out[1]
-                elif out[0] == True:
+                if out == 'Menu_page':
+                    self.page = 'Menu_page'
+                elif out == True:
                     finished = True
 
             elif self.page == 'Game_choose':

@@ -25,7 +25,7 @@ class Mouse():
 class Game0():
     def __init__(self, name, screen):
         '''
-        игра
+        игра с компьютером
         :param screen: экран на который выводиться изображение
         '''
         global Mouse
@@ -103,7 +103,7 @@ class Game0():
         global board
         board = Board(self.screen)
         global algorithm
-        algorithm = Alforithm(game_field, board, computer)
+        algorithm = Alforithm()
 
     def step_gamer(self, clock):
         '''
@@ -139,7 +139,7 @@ class Game0():
 
             rect(self.screen, WHITE, (x_step - 5, y_step - 5, 130, 30))
             f0 = pygame.font.Font(None, 24)
-            text0 = f0.render('закончить ход', 5, MAGENTA)
+            text0 = f0.render('закончить ход', 5, СYAN_BOARD)
             self.screen.blit(text0, (x_step, y_step))
 
             if game_field.t1 > 0:
@@ -902,7 +902,7 @@ class Game_field():
                     for elem in player.resources:
                         resources_i[elem] = player.resources[elem] + self.territories[x][y].resources[elem]
                     player.resources = resources_i
-                    self.give_res = False
+                    self.territories[x][y].give_res = False
 
 
 
@@ -912,11 +912,6 @@ class Game_field():
 
 
 class Alforithm():
-    def __init__(self, game_field, board, computer):
-        # self.game_field = game_field
-        # self.board = board
-        # self.computer = computer
-        pass
 
     # Мирный режим - режим самого начала игры. Основная задача - накопить денег и еды (чтобы позже была армия)
     def peace(self, game_field, board, computer):
