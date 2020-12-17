@@ -66,9 +66,10 @@ class Pages():
                 return 'Settings_page'
 
             if Mouse.enter:
-                pygame.mixer.music.pause()
+                pass
+                # pygame.mixer.music.pause()
 
-            self.grid()
+            # self.grid()
 
             pg.display.update()
             self.screen.fill(BLACK)
@@ -124,7 +125,7 @@ class Pages():
             if (Mouse.x > 860) and (Mouse.x < 930) and (Mouse.y > 690) and (Mouse.y < 705) and Mouse.p and self.T == 0:
                 self.T = self.T0
                 return 'Menu_page'
-            self.grid()
+            # self.grid()
 
             pg.display.update()
             self.screen.fill(BLACK)
@@ -181,7 +182,7 @@ class Pages():
     def game_choose(self):
         clock = pg.time.Clock()
         pg.display.update()
-        print(self.T)
+        # print(self.T)
         while True:
             clock.tick(FPS)
             for event in pg.event.get():
@@ -210,7 +211,7 @@ class Pages():
             if (Mouse.x > 390) and (Mouse.x < 570) and (Mouse.y > 350) and (Mouse.y < 390) and Mouse.p and self.T == 0:
                 self.T = self.T0
                 return 'Game00_page'
-            self.grid()
+            # self.grid()
 
             pg.display.update()
             self.screen.fill(BLACK)
@@ -237,14 +238,14 @@ class Pages():
                     Mouse.p = False
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_RETURN:
-                        Mouse.enter = False
+                        Mouse.enter = True
 
                     elif event.key == pg.K_BACKSPACE:
                         name = name[:-1]
 
                     else:
                         name += event.unicode
-
+            # print(Mouse.enter)
             if self.T > 0:
                 self.T -= 1
 
@@ -257,7 +258,9 @@ class Pages():
             if (Mouse.x > 760) and (Mouse.x < 920) and (Mouse.y > 690) and (Mouse.y < 705) and Mouse.p and self.T == 0:
                 self.T = self.T0
                 return ('Game0_game_page', name)
-            self.grid()
+            if Mouse.enter:
+                return ('Game0_game_page', name)
+            # self.grid()
 
             pg.display.update()
             self.screen.fill(BLACK)
@@ -319,7 +322,7 @@ class Pages():
             if (Mouse.x > 760) and (Mouse.x < 920) and (Mouse.y > 690) and (Mouse.y < 705) and Mouse.p and self.T == 0:
                 self.T = self.T0
                 return ('Game00_game_page', name1, name2)
-            self.grid()
+            # self.grid()
 
             pg.display.update()
             self.screen.fill(BLACK)
@@ -380,7 +383,7 @@ class Pages():
             if (Mouse.x > 860) and (Mouse.x < 930) and (Mouse.y > 690) and (Mouse.y < 705) and Mouse.p and self.T == 0:
                 self.T = self.T0
                 return 'Menu_page'
-            self.grid()
+            # self.grid()
 
             pg.display.update()
             self.screen.fill(BLACK)

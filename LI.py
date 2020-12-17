@@ -93,7 +93,8 @@ class Labirint_Fantaxiy():
                 out = game.game()
                 if out[0] == 'Menu_page':
                     self.page = 'Menu_page'
-                    output_top_player('game00', out[1], out[2])
+                    if out[1] != 'draw':
+                        output_top_player('game00', out[1], out[2])
                 elif out[0] == True:
                     finished = True
 

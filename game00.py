@@ -44,6 +44,7 @@ class Game00():
         self.n_win = 0
 
         self.image_game = pg.image.load('image\game.jpg').convert_alpha()
+        # self.image_game_over = pg.image.load('image\game_over.jpg').convert_alpha()
 
     def game(self):
         '''
@@ -72,8 +73,8 @@ class Game00():
             if out2:
                 break
 
-            print('-------------------------------------------------'
-                  '---------------------------------------------------------------------')
+            # print('-------------------------------------------------'
+            #       '---------------------------------------------------------------------')
             if i == 3:
                 gamer1.resources['gold'] += 100
                 gamer2.resources['gold'] += 100
@@ -98,7 +99,7 @@ class Game00():
         global gamer1
         gamer1 = Gamer(self.name1)
         global gamer2
-        gamer2 = Gamer(self.name2)
+        gamer2 = Gamer(self.name2, side=1)
         global game_field
         game_field = Game_field(self.screen)
         game_field.init_outpost()
@@ -154,7 +155,7 @@ class Game00():
             if out:
                 self.step_player_outpost = True
                 self.outpostes_num += 1
-            print(self.step_player_outpost)
+            # print(self.step_player_outpost)
             if (Mouse.x > x_step) and (Mouse.x < x_step + 130) and (Mouse.y > y_step) and (Mouse.y < y_step + 30) and Mouse.p and self.t == 0:
                 self.t = self.t0
                 break
@@ -162,7 +163,7 @@ class Game00():
                 break
             pg.display.update()
             self.screen.fill(BLACK)
-        print('-------------------------------------------------------------')
+        # print('-------------------------------------------------------------')
         game_field.built_outposts(player)
         cycle = game_field.check_cycle(player)
         if cycle != []:
@@ -193,6 +194,8 @@ class Game00():
                         pass
                     elif game_field.territories[i][j].player == gamer2.name:
                         n_gamer += 1
+            n_gamer1 = n_gamer1 * 100 + gamer1.resources['gold'] + gamer1.resources['army'] + gamer1.resources['building']
+            n_gamer2 = n_gamer2 * 100 + gamer2.resources['gold'] + gamer2.resources['army'] + gamer2.resources['building']
             if n_gamer2 > n_gamer1:
                 self.win = gamer2.name
                 self.n_win = n_gamer2
@@ -246,7 +249,7 @@ class Game00():
             text0 = f0.render('Ничья', 5, WHITE)
             self.screen.blit(text0, (300, 40))
 
-        rect(self.screen, WHITE, (x_step - 5, y_step - 5, 130, 30))
+        rect(self.screen, WHITE, (x_step - 5, y_step - 5, 170, 30))
         f0 = pygame.font.Font(None, 24)
         text0 = f0.render('вернуться в меню', 5, MAGENTA)
         self.screen.blit(text0, (x_step, y_step))
@@ -450,9 +453,9 @@ class Game_field():
         :return: построен аванпост или нет
         '''
         game_field.game_field()
-        game_field.draw_outpostes()
         # game_field.grid()
         game_field.draw_territories()
+        game_field.draw_outpostes()
         return game_field.interaction_with_fied(player, step_player_outpost, player1)
 
     def draw_game_over(self):
@@ -555,13 +558,13 @@ class Game_field():
         x33, y33 = int((x / self.dx)//0.25%4), int((y / self.dy)//0.25%4)
         pygame.draw.circle(self.screen, WHITE, (Mouse.x, Mouse.y), 5)
 
-        f0 = pygame.font.Font(None, 36)
-        text0 = f0.render('x3 = {}, y3 = {}'.format(x3, y3), 5, WHITE)
-        self.screen.blit(text0, (5, 5))
+        # f0 = pygame.font.Font(None, 36)
+        # text0 = f0.render('x3 = {}, y3 = {}'.format(x3, y3), 5, WHITE)
+        # self.screen.blit(text0, (5, 5))
 
-        f0 = pygame.font.Font(None, 36)
-        text0 = f0.render('x33 = {}, y33 = {}'.format(x33, y33), 5, WHITE)
-        self.screen.blit(text0, (5, 25))
+        # f0 = pygame.font.Font(None, 36)
+        # text0 = f0.render('x33 = {}, y33 = {}'.format(x33, y33), 5, WHITE)
+        # self.screen.blit(text0, (5, 25))
 
         if x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
             if x33 == 3 and y33 == 3:
@@ -580,9 +583,9 @@ class Game_field():
                 self.pos = 'Territories'
 
         if self.pos == 'Territories' and x3 >= 0 and x3 <= 9 and y3 >= 0 and y3 <= 9:
-            f0 = pygame.font.Font(None, 36)
-            text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.territories[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Territories'), 5, WHITE)
-            self.screen.blit(text0, (300, 5))
+            # f0 = pygame.font.Font(None, 36)
+            # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.territories[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Territories'), 5, WHITE)
+            # self.screen.blit(text0, (300, 5))
 
             self.territories[x3][y3].draw_information()
 
@@ -604,48 +607,55 @@ class Game_field():
         #     self.t2 -= 1
         # print(self.p_outpost)
         if self.pos == 'Outpost' and x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
-            f0 = pygame.font.Font(None, 36)
-            text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
-            self.screen.blit(text0, (300, 5))
+            if self.outpostes[x3][y3].exist:
+                # f0 = pygame.font.Font(None, 36)
+                # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
+                # self.screen.blit(text0, (300, 5))
 
-            if self.p_outpost == None:
-                self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
-            # print(self.p_outpost)
-            if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
-                print('------------------------------------------------')
-                self.p_outpost = None
-                self.t = self.t0
-            if Mouse.p and self.t == 0:
-                self.p_outpost = (x3, y3)
-                self.t = self.t0
+                if self.p_outpost == None:
+                    self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
+                # print(self.p_outpost)
+                if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
+                    # print('------------------------------------------------')
+                    self.p_outpost = None
+                    self.t = self.t0
+                if Mouse.p and self.t == 0:
+                    self.p_outpost = (x3, y3)
+                    self.t = self.t0
 
-            if Mouse.p and self.outpostes[x3][y3].player == '' and not step_player_outpost and self.outpostes[x3][y3].cost <= player.resources['gold']:
-                for x, y in player1.myoutpostes_build:
-                    print(x, y)
-                    if (abs(x3 - x) == 1 or abs(x3 - x) == 0) and (abs(y3 - y) == 1 or abs(y3 - y) == 0):
-                        print(x, y)
-                        out = self.outpostes[x3][y3].check_stranger(player, player1, self.outpostes[x][y], y3, y)
-                        if out == None:
-                            break
-                        elif out:
-                            self.outpostes[x][y].exist = False
-                            print(x, y)
-                            player1.myoutpostes_build.remove((x, y))
-                            print('1111111111111111111111111111111111111111111111111111111111111111')
-                            break
-                        else:
-                            self.outpostes[x3][y3].exist = False
-                            print('2222222222222222222222222222222222222222222222222222222222222222')
-                            self.t1 = self.t0
-                            return True
-                self.outpostes[x3][y3].player = player.name
-                player.resources['gold'] -= self.outpostes[x3][y3].cost
-                # voc = player.myoutpostes
-                # print(player.myoutpostes)
-                # print('voc', voc, 'voc.ap', voc.append((x3, y3)))
-                player.myoutpostes_build.append((x3, y3))
-                # print(player.myoutpostes)
-                return True
+                if Mouse.p and self.outpostes[x3][y3].player == '' and not step_player_outpost and self.outpostes[x3][y3].cost <= player.resources['gold']:
+                    for x, y in player1.myoutpostes_build:
+                        # print(x, y)
+                        if (abs(x3 - x) == 1 or abs(x3 - x) == 0) and (abs(y3 - y) == 1 or abs(y3 - y) == 0):
+                            # print(x, y)
+                            out = self.outpostes[x3][y3].check_stranger(player, player1, self.outpostes[x][y], y3, y)
+                            if out == None:
+                                break
+                            elif out:
+                                self.outpostes[x][y].exist = False
+                                # print(x, y)
+                                player1.myoutpostes_build.remove((x, y))
+                                player.resources['army'] -= 100
+                                player1.resources['army'] -= 100
+                                # print('1111111111111111111111111111111111111111111111111111111111111111')
+                                break
+                            else:
+                                self.outpostes[x3][y3].exist = False
+                                player.resources['army'] -= 100
+                                player1.resources['army'] -= 100
+                                # print('2222222222222222222222222222222222222222222222222222222222222222')
+                                self.t1 = self.t0
+                                return True
+                    self.outpostes[x3][y3].player = player.name
+                    if player.side == 1:
+                        self.outpostes[x3][y3].side = 1
+                    player.resources['gold'] -= self.outpostes[x3][y3].cost
+                    # voc = player.myoutpostes
+                    # print(player.myoutpostes)
+                    # print('voc', voc, 'voc.ap', voc.append((x3, y3)))
+                    player.myoutpostes_build.append((x3, y3))
+                    # print(player.myoutpostes)
+                    return True
         return False
 
     def interaction_with_fied_game_over(self):
@@ -701,20 +711,21 @@ class Game_field():
         #     self.t2 -= 1
         # print(self.p_outpost)
         if self.pos == 'Outpost' and x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
-            # f0 = pygame.font.Font(None, 36)
-            # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
-            # self.screen.blit(text0, (300, 5))
+            if self.outpostes[x3][y3].exist:
+                # f0 = pygame.font.Font(None, 36)
+                # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
+                # self.screen.blit(text0, (300, 5))
 
-            if self.p_outpost == None:
-                self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
-            # print(self.p_outpost)
-            if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
-                print('------------------------------------------------')
-                self.p_outpost = None
-                self.t = self.t0
-            if Mouse.p and self.t == 0:
-                self.p_outpost = (x3, y3)
-                self.t = self.t0
+                if self.p_outpost == None:
+                    self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
+                # print(self.p_outpost)
+                if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
+                    # print('------------------------------------------------')
+                    self.p_outpost = None
+                    self.t = self.t0
+                if Mouse.p and self.t == 0:
+                    self.p_outpost = (x3, y3)
+                    self.t = self.t0
 
     def draw_outpostes(self):
         '''
@@ -827,7 +838,7 @@ class Game_field():
         for x in range(self.n):
             for y in range(self.n):
                 if self.territories[x][y].player == player.name and self.territories[x][y].give_res:
-                    print('33333333333333333333333333333')
+                    # print('33333333333333333333333333333')
                     resources_i = {}
                     for elem in player.resources:
                         resources_i[elem] = player.resources[elem] + self.territories[x][y].resources[elem]

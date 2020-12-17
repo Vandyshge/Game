@@ -25,6 +25,7 @@ def output_top_player(type_game, win, n_win):
         out00_r = open('text/top_player_game00.txt', 'r')
         game00 = []
         line = out00_r.readline().strip()
+        line = out00_r.readline().strip()
         while line != '':
             line = line.split(' ')
             game00.append((int(line[3]), line[1]))

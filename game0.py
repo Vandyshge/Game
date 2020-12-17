@@ -8,6 +8,7 @@ from constants import *
 from objects import *
 from ter import *
 from player import *
+# from algorithm import *
 
 
 class Mouse():
@@ -36,7 +37,6 @@ class Game0():
         global x_step, y_step
         x_step = 850 # x координата кнопки "закончить ход"
         y_step = 650 # y координата кнопки "закончить ход"
-
         self.t = 0 # время задержки(сейчас)
         self.t0 = 1*FPS # время задержки(по дефолту)
         self.outpostes_num = 0 # количество занятых аванпостов
@@ -69,8 +69,8 @@ class Game0():
             out2 = self.check_game_over()
             if out2:
                 break
-            print('-------------------------------------------------'
-                  '---------------------------------------------------------------------')
+            # print('-------------------------------------------------'
+                  # '---------------------------------------------------------------------')
             if i == 3:
                 gamer.resources['gold'] += 100
                 computer.resources['gold'] += 100
@@ -102,6 +102,8 @@ class Game0():
         game_field.init_territorie()
         global board
         board = Board(self.screen)
+        global algorithm
+        algorithm = Alforithm(game_field, board, computer)
 
     def step_gamer(self, clock):
         '''
@@ -152,7 +154,7 @@ class Game0():
             if out:
                 self.step_gamer_outpost = True
                 self.outpostes_num += 1
-            print(self.step_gamer_outpost)
+            # print(self.step_gamer_outpost)
             if (Mouse.x > x_step) and (Mouse.x < x_step + 130) and (Mouse.y > y_step) and (Mouse.y < y_step + 30) and Mouse.p and self.t == 0:
                 self.t = self.t0
                 break
@@ -160,7 +162,7 @@ class Game0():
                 break
             pg.display.update()
             self.screen.fill(BLACK)
-        print('-------------------------------------------------------------')
+        # print('-------------------------------------------------------------')
         game_field.built_outposts(gamer)
         cycle = game_field.check_cycle(gamer)
         if cycle != []:
@@ -181,73 +183,61 @@ class Game0():
         :param clock: объект часов
         :return: "exit" - нажата кнопка выход, "finish" - ход закончен
         '''
-        self.step_computer_outpost = False
-        while True:
-            clock.tick(FPS)
-            # print(computer.myoutpostes, computer.myoutpostes_build)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return 'exit'
-                if event.type == pygame.MOUSEMOTION:
-                    # запись новых координат мышки(если она подвинулась)
-                    Mouse.x, Mouse.y = event.pos
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    # кнопка зажата
-                    Mouse.p = True
-                if event.type == pygame.MOUSEBUTTONUP:
-                    # кнопка отжата
-                    Mouse.p = False
-                if event.type == pygame.KEYDOWN:
-                    # кнопка отжата
-                    if event.key == pygame.K_RETURN:
-                        Mouse.enter = True
+        # algorithm.updade(game_field, board, computer)
+        out = algorithm.war(game_field, board, computer)
+        # print(out)
+        if out[0]:
+            x3, y3 = out[1], out[2]
+            # for _ in range(10):
+            #     print(algorithm.v(0, 0, 'peace'))
+            # while True:
+            #     x3, y3 = randint(0, 10), randint(0, 10)
+            if game_field.outpostes[x3][y3].player == '':
+                k = 0
+                for x, y in gamer.myoutpostes_build:
+                    # print(x, y)
+                    if (abs(x3 - x) == 1 or abs(x3 - x) == 0) and (abs(y3 - y) == 1 or abs(y3 - y) == 0):
+                        # print(x, y)
+                        out = game_field.outpostes[x3][y3].check_stranger(computer, gamer, game_field.outpostes[x][y], y3, y)
+                        if out == None:
+                            break
+                        elif out:
+                            game_field.outpostes[x][y].exist = False
+                            # print(x, y)
+                            gamer.myoutpostes_build.remove((x, y))
+                            gamer.resources['army'] -= 100
+                            computer.resources['army'] -= 100
+                            # print('1111111111111111111111111111111111111111111111111111111111111111')
+                            break
+                        else:
+                            game_field.outpostes[x3][y3].exist = False
+                            gamer.resources['army'] -= 100
+                            computer.resources['army'] -= 100
+                            # print('2222222222222222222222222222222222222222222222222222222222222222')
+                            k = 1
+                if k != 1:
+                    # break
+                    game_field.outpostes[x3][y3].player = 'computer'
+                    game_field.outpostes[x3][y3].side = 1
+                    # print('1')
+                    computer.resources['gold'] -= game_field.outpostes[x3][y3].cost
+                    # voc = player.myoutpostes
+                    # print(player.myoutpostes)
+                    # print('voc', voc, 'voc.ap', voc.append((x3, y3)))
+                    computer.myoutpostes_build.append((x3, y3))
+                    # break
 
-            self.screen.blit(self.image_game, (0, 0))
 
-            if self.t > 0:
-                self.t -= 1
-
-            print(self.t)
-
-            rect(self.screen, WHITE, (x_step - 5, y_step - 5, 130, 30))
-            f0 = pygame.font.Font(None, 24)
-            text0 = f0.render('закончить ход', 5, MAGENTA)
-            self.screen.blit(text0, (x_step, y_step))
-
-            if game_field.t1 > 0:
-                f0 = pygame.font.Font(None, 24)
-                text0 = f0.render('Вы проиграли бой', 5, MAGENTA)
-                self.screen.blit(text0, (400, 100))
-
-            board.draw(computer)
-            board.draw_exchange(computer)
-            # print('11111')
-            out = game_field.draw(computer, self.step_computer_outpost, gamer)
-            if out:
-                self.step_computer_outpost = True
-                self.outpostes_num += 1
-            # print(self.step_gamer_outpost)
-            if (Mouse.x > x_step) and (Mouse.x < x_step + 130) and (Mouse.y > y_step) and (Mouse.y < y_step + 30) and Mouse.p and self.t == 0:
-                self.t = self.t0
-                break
-            if Mouse.enter and self.step_computer_outpost:
-                break
-            pg.display.update()
-            self.screen.fill(BLACK)
-        print('-------------------------------------------------------------')
+        # print('-------------------------------------------------------------')
         game_field.built_outposts(computer)
         cycle = game_field.check_cycle(computer)
         if cycle != []:
             computer.cycle.append(cycle)
             game_field.change_ter(computer.cycle[len(computer.cycle) - 1], computer)
         game_field.get_resourses(computer)
-        Mouse.enter = False
-        game_field.p_outpost = None
 
         if computer.resources['army'] < 1000 * computer.resources['food'] and computer.resources['food'] > 0:
             computer.resources['army'] += int(np.log(computer.resources['food']) * 100)
-
-        return 'finish'
 
     def check_game_over(self):
         '''
@@ -265,6 +255,8 @@ class Game0():
                         pass
                     else:
                         n_gamer += 1
+            n_gamer = n_gamer * 100 + gamer.resources['gold'] + gamer.resources['army'] + gamer.resources['building']
+            n_computer = n_computer * 100 + computer.resources['gold'] + computer.resources['army'] + computer.resources['building']
             if n_computer > n_gamer:
                 self.win = 'computer'
             elif n_computer == n_gamer:
@@ -320,7 +312,7 @@ class Game0():
             text0 = f0.render('Ничья', 5, WHITE)
             self.screen.blit(text0, (300, 40))
 
-        rect(self.screen, WHITE, (x_step - 5, y_step - 5, 130, 30))
+        rect(self.screen, WHITE, (x_step - 5, y_step - 5, 170, 30))
         f0 = pygame.font.Font(None, 24)
         text0 = f0.render('вернуться в меню', 5, MAGENTA)
         self.screen.blit(text0, (x_step, y_step))
@@ -492,7 +484,7 @@ class Game_field():
                 b = self.b_sol(self.x_min + self.dx * i, self.y_min)
                 x, y = self.y_x(self.y_min + self.dy * j, k, b), self.y_min + self.dy * j
                 x, y = self.xy(self.x + x, self.y + y)
-                self.outpostes[i][j] = Outpost(int(x), int(y), self.screen, i, j)
+                self.outpostes[i][j] = Outpost(int(x), int(y), self.screen, i, j, y_scale=(1 - np.log(j + 1) / 2.3))
 
     def init_territorie(self):
         '''
@@ -513,7 +505,7 @@ class Game_field():
         b = self.b_sol(self.x_min + self.dx * (i + 0.5), self.y_min)
         x, y = self.y_x(self.y_min + self.dy * (j + 0.5), k, b), self.y_min + self.dy * (j + 0.5)
         x, y = self.xy(self.x + x, self.y + y)
-        return Territory(x, y, self.screen, i, j)
+        return Territory(x, y, self.screen, i, j, y_scale=(1 - np.log(j + 1) / 2.1))
 
     def draw(self, player, step_player_outpost, player1):
         '''
@@ -524,9 +516,9 @@ class Game_field():
         :return: построен аванпост или нет
         '''
         game_field.game_field()
-        game_field.draw_outpostes()
         # game_field.grid()
         game_field.draw_territories()
+        game_field.draw_outpostes()
         return game_field.interaction_with_fied(player, step_player_outpost, player1)
 
     def draw_game_over(self):
@@ -629,13 +621,13 @@ class Game_field():
         x33, y33 = int((x / self.dx)//0.25%4), int((y / self.dy)//0.25%4)
         pygame.draw.circle(self.screen, WHITE, (Mouse.x, Mouse.y), 5)
 
-        f0 = pygame.font.Font(None, 36)
-        text0 = f0.render('x3 = {}, y3 = {}'.format(x3, y3), 5, WHITE)
-        self.screen.blit(text0, (5, 5))
+        # f0 = pygame.font.Font(None, 36)
+        # text0 = f0.render('x3 = {}, y3 = {}'.format(x3, y3), 5, WHITE)
+        # self.screen.blit(text0, (5, 5))
 
-        f0 = pygame.font.Font(None, 36)
-        text0 = f0.render('x33 = {}, y33 = {}'.format(x33, y33), 5, WHITE)
-        self.screen.blit(text0, (5, 25))
+        # f0 = pygame.font.Font(None, 36)
+        # text0 = f0.render('x33 = {}, y33 = {}'.format(x33, y33), 5, WHITE)
+        # self.screen.blit(text0, (5, 25))
 
         if x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
             if x33 == 3 and y33 == 3:
@@ -654,9 +646,7 @@ class Game_field():
                 self.pos = 'Territories'
 
         if self.pos == 'Territories' and x3 >= 0 and x3 <= 9 and y3 >= 0 and y3 <= 9:
-            f0 = pygame.font.Font(None, 36)
-            text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.territories[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Territories'), 5, WHITE)
-            self.screen.blit(text0, (300, 5))
+            # f0 = pygame.font.Fond (300, 5))
 
             self.territories[x3][y3].draw_information()
 
@@ -678,48 +668,53 @@ class Game_field():
         #     self.t2 -= 1
         # print(self.p_outpost)
         if self.pos == 'Outpost' and x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
-            f0 = pygame.font.Font(None, 36)
-            text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
-            self.screen.blit(text0, (300, 5))
+            if self.outpostes[x3][y3].exist:
+                # f0 = pygame.font.Font(None, 36)
+                # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
+                # self.screen.blit(text0, (300, 5))
 
-            if self.p_outpost == None:
-                self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
-            # print(self.p_outpost)
-            if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
-                print('------------------------------------------------')
-                self.p_outpost = None
-                self.t = self.t0
-            if Mouse.p and self.t == 0:
-                self.p_outpost = (x3, y3)
-                self.t = self.t0
+                if self.p_outpost == None:
+                    self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
+                # print(self.p_outpost)
+                if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
+                    # print('------------------------------------------------')
+                    self.p_outpost = None
+                    self.t = self.t0
+                if Mouse.p and self.t == 0:
+                    self.p_outpost = (x3, y3)
+                    self.t = self.t0
 
-            if Mouse.p and self.outpostes[x3][y3].player == '' and not step_player_outpost and self.outpostes[x3][y3].cost <= player.resources['gold']:
-                for x, y in player1.myoutpostes_build:
-                    print(x, y)
-                    if (abs(x3 - x) == 1 or abs(x3 - x) == 0) and (abs(y3 - y) == 1 or abs(y3 - y) == 0):
-                        print(x, y)
-                        out = self.outpostes[x3][y3].check_stranger(player, player1, self.outpostes[x][y], y3, y)
-                        if out == None:
-                            break
-                        elif out:
-                            self.outpostes[x][y].exist = False
-                            print(x, y)
-                            player1.myoutpostes_build.remove((x, y))
-                            print('1111111111111111111111111111111111111111111111111111111111111111')
-                            break
-                        else:
-                            self.outpostes[x3][y3].exist = False
-                            print('2222222222222222222222222222222222222222222222222222222222222222')
-                            self.t1 = self.t0
-                            return True
-                self.outpostes[x3][y3].player = player.name
-                player.resources['gold'] -= self.outpostes[x3][y3].cost
-                # voc = player.myoutpostes
-                # print(player.myoutpostes)
-                # print('voc', voc, 'voc.ap', voc.append((x3, y3)))
-                player.myoutpostes_build.append((x3, y3))
-                # print(player.myoutpostes)
-                return True
+                if Mouse.p and self.outpostes[x3][y3].player == '' and not step_player_outpost and self.outpostes[x3][y3].cost <= player.resources['gold']:
+                    for x, y in player1.myoutpostes_build:
+                        # print(x, y)
+                        if (abs(x3 - x) == 1 or abs(x3 - x) == 0) and (abs(y3 - y) == 1 or abs(y3 - y) == 0):
+                            # print(x, y)
+                            out = self.outpostes[x3][y3].check_stranger(player, player1, self.outpostes[x][y], y3, y)
+                            if out == None:
+                                break
+                            elif out:
+                                self.outpostes[x][y].exist = False
+                                # print(x, y)
+                                player1.myoutpostes_build.remove((x, y))
+                                player.resources['army'] -= 100
+                                player1.resources['army'] -= 100
+                                # print('1111111111111111111111111111111111111111111111111111111111111111')
+                                break
+                            else:
+                                self.outpostes[x3][y3].exist = False
+                                player.resources['army'] -= 100
+                                player1.resources['army'] -= 100
+                                # print('2222222222222222222222222222222222222222222222222222222222222222')
+                                self.t1 = self.t0
+                                return True
+                    self.outpostes[x3][y3].player = player.name
+                    player.resources['gold'] -= self.outpostes[x3][y3].cost
+                    # voc = player.myoutpostes
+                    # print(player.myoutpostes)
+                    # print('voc', voc, 'voc.ap', voc.append((x3, y3)))
+                    player.myoutpostes_build.append((x3, y3))
+                    # print(player.myoutpostes)
+                    return True
         return False
 
     def interaction_with_fied_game_over(self):
@@ -775,20 +770,21 @@ class Game_field():
         #     self.t2 -= 1
         # print(self.p_outpost)
         if self.pos == 'Outpost' and x3 >= 0 and x3 <= 10 and y3 >= 0 and y3 <= 10:
-            # f0 = pygame.font.Font(None, 36)
-            # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
-            # self.screen.blit(text0, (300, 5))
+            if self.outpostes[x3][y3].exist:
+                # f0 = pygame.font.Font(None, 36)
+                # text0 = f0.render('x = {}, y = {}, pos = {}'.format(self.outpostes[x3][y3].x_list, self.outpostes[x3][y3].y_list, 'Outpost'), 5, WHITE)
+                # self.screen.blit(text0, (300, 5))
 
-            if self.p_outpost == None:
-                self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
-            # print(self.p_outpost)
-            if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
-                print('------------------------------------------------')
-                self.p_outpost = None
-                self.t = self.t0
-            if Mouse.p and self.t == 0:
-                self.p_outpost = (x3, y3)
-                self.t = self.t0
+                if self.p_outpost == None:
+                    self.outpostes[x3][y3].draw_information(Mouse.x, Mouse.y, Mouse.p)
+                # print(self.p_outpost)
+                if self.p_outpost == (x3, y3) and Mouse.p and self.t == 0:
+                    # print('------------------------------------------------')
+                    self.p_outpost = None
+                    self.t = self.t0
+                if Mouse.p and self.t == 0:
+                    self.p_outpost = (x3, y3)
+                    self.t = self.t0
 
     def draw_outpostes(self):
         '''
@@ -901,9 +897,123 @@ class Game_field():
         for x in range(self.n):
             for y in range(self.n):
                 if self.territories[x][y].player == player.name and self.territories[x][y].give_res:
-                    print('33333333333333333333333333333')
+                    # print('33333333333333333333333333333')
                     resources_i = {}
                     for elem in player.resources:
                         resources_i[elem] = player.resources[elem] + self.territories[x][y].resources[elem]
                     player.resources = resources_i
                     self.give_res = False
+
+
+
+'''Суть алгоритма: в зависимости от стратегии компьютера клеткам присваивается разная ценность;
+Для постановки выбирается аванпост с наибольшей ценностью соседних клеткок'''
+
+
+
+class Alforithm():
+    def __init__(self, game_field, board, computer):
+        # self.game_field = game_field
+        # self.board = board
+        # self.computer = computer
+        pass
+
+    # Мирный режим - режим самого начала игры. Основная задача - накопить денег и еды (чтобы позже была армия)
+    def peace(self, game_field, board, computer):
+        m = 0   # Счетчики для нахождения наибольшего элемента множества
+        m_i = 0
+        m_j = 0
+        for i in range(1, 9):
+            for j in range(7, 9):   # Ограничение на область, считающейся "домашней"
+                if game_field.territories[i][j].player == '':   # Считаем ценность только незанятых клеток
+                    k = self.v(i, j, 'peace')
+                else:
+                    k = 0
+                if game_field.outpostes[i-1][j].player == 'computer' or game_field.outpostes[i+1][j].player == 'computer' or\
+                        game_field.outpostes[i][j-1].player == 'computer' or game_field.outpostes[i][j+1].player == 'computer':
+                    sosedi = 100   # Увеличиваем ценность пересечения, если одно из соседних пренадлежит компьютеру
+                else:
+                    sosedi = 0   # Нужно, чтобы компьютер захватывал территории
+                counter = self.v(i-1, j-1, 'peace') + self.v(i, j-1, 'peace') + self.v(i-1, j, 'peace') + k + sosedi   # Возможно, нужно учесть еще что-нибудь
+                if m < counter and game_field.outpostes[i][j].player == '':   # Проверка на максимум и на то, что аванпост ничей
+                    m = counter
+                    m_i = i
+                    m_j = j
+        if m != 0:
+            return (True, m_i, m_j)  # Присвиваем аванпост
+        return (False, 0, 0)
+
+
+    # Режим говнаря - режим тактической бомбардировки территории игрока. Активируется, если игрок сам начинает говнить
+    def govnilovka(self):
+        m = 1000   # Счетчики для нахождения наименьшего элемента
+        m_i = 0
+        m_j = 0
+        if computer.resources['gold'] > 500:   # Проверка, достаточно ли ресурсов, чтобы можно было говнить без ущерба для себя
+            for i in range(1, 11):
+                for j in range(1, 3):   # Ограничение на домашнюю территорию игрока
+                    if game_field.territories[i][j].player == '':   # Считаем ценность только незанятых клеток
+                        k = self.v(i, j, 'govnilovka')
+                    else:
+                        k = 0
+                    if game_field.outpostes[i-1][j].player == 'computer' or game_field.outpostes[i+1][j].player == 'computer'\
+                            or game_field.outpostes[i][j-1].player == 'computer' or game_field.outpostes[i][j+1].player == 'computer':
+                        sosedi = 100   # Учитываем соседей, но на этот раз в минус
+                    else:
+                        sosedi = 0
+                    counter = self.v(i-1, j-1, 'govnilovka') + self.v(i, j-1, 'govnilovka') + self.v(i-1, j, 'govnilovka') + k + sosedi
+                    if m > counter and game_field.outpost[i][j].player == '':   # Проверка на минимум и на то, что аванпост ничей
+                        m = counter
+                        m_i = i
+                        m_j = j
+            game_field.outpost[m_i][m_j].player = 'computer'
+        else:
+            war()   # Если ресурсов мало, добываем еще
+
+
+    # Режим войны, активируется, если ресурсов на домашней территории осталось мало
+    def war(self, game_field, board, computer):
+        m = 0
+        for i in range(1, 10):   # проверяем, достаточно ли ресурсов на домашней территории
+            for j in range(7, 10):   # Ограничиваем домашнюю территорию
+                if game_field.territories[i][j].player == '':   # Учитываем только незанятые клетки
+                    k = self.v(i, j, 'peace')
+                else:
+                    k = 0
+                counter = self.v(i-1, j-1, 'peace') + self.v(i, j-1, 'peace') + self.v(i-1, j, 'peace') + k   # При подсчете смотрим только на ресурсы
+                if m < counter and game_field.outpostes[i][j].player == '':   # Проверка на максимум и незанятость
+                    m = counter
+        if m > 100:   # Граница, достаточной ценности клеток
+            return self.peace(game_field, board, computer)
+        else:
+            sosedi = 0
+            m = 0   # Счетчики для нахождения наибольшего элемента множества
+            m_i = 0
+            m_j = 0
+            for i in range(1, 10):
+                for j in range(3, 7):   # Граница спорной территории
+                    if game_field.territories[i][j].player == None:   # Учитываем только незанятые клетки
+                        k = self.v(i, j, 'peace')
+                    else:
+                        k = 0
+                    if game_field.outpostes[i - 1][j].player == 'computer' or game_field.outpostes[i + 1][j].player == 'computer'\
+                            or game_field.outpostes[i][j - 1].player == 'computer' or game_field.outpostes[i][j + 1].player == 'computer':
+                        sosedi = 100   # Увеличиваем ценность пересечения, если одно из соседних пренадлежит компьютеру
+                    counter = self.v(i-1, j-1, 'peace') + self.v(i, j-1, 'peace') + self.v(i-1, j, 'peace') + k + sosedi
+                    if m < counter and game_field.outpostes[i][j].player == None:   # Проверка на максимум и незанятость
+                        m = counter
+                        m_i = i
+                        m_j = j
+            if computer.resources['building'] > 100:   # Ускоряем строительство
+                computer.resources['building'] -= 100
+                outpost[m_i][m_j].build_outposte()
+            if computer.resources['building'] > 500:   # Если достаточно ресурсов, ускоряем еще раз
+                computer.resources['building'] -= 100
+                outpost[m_i][m_j].build_outposte()
+            if computer.resources['gold'] > 500:   # Покупаем армию
+                board.exchange_gold_army()
+                board.exchange_gold_building()
+            return (True, m_i, m_j)
+
+    def v(self, x, y, type_alg):
+        return game_field.territories[x][y].count[type_alg]
